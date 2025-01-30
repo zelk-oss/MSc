@@ -16,7 +16,7 @@ start = time.time()
 
 # Load time series data
 accelerate = 1
-file_path = '../../../data_toobig/data_1e5points_1000ws/evol_fields_1e-8.dat'
+file_path = '../../../data_thesis/data_1e5points_1000ws/evol_fields_1e-8.dat'
 data_in_file = []
 
 with open(file_path, 'r') as file:
@@ -76,14 +76,12 @@ def keep_middle_window(input_array, output_file):
 
     print(f"Successfully kept a window of {window_size} points around the middle. Output saved to {output_file}.")
 
-# Example call to the function with a sample array
-# Create a dummy 36x9999 array for demonstration
-keep_middle_window(select_time_series_10yr_averaging, "window_for_TE/10yr_strong_window")
+# Keeping a chunk of data for TE analysis (very slow)
+#keep_middle_window(select_time_series_10yr_averaging, "window_for_TE/10yr_strong_window")
 
 
-"""
 # Compute Liang's function
-nvar_results = np.array(compute_liang_nvar(select_time_series_33days_averaging, 1, 1000))
+nvar_results = np.array(compute_liang_nvar(select_time_series_10yr_averaging, 1, 1000))
 
 # Prepare arrays for results
 num_vars = len(select_vars)
@@ -103,8 +101,11 @@ for i in range(num_vars):
         error_r_nvar[i, j] = nvar_results[5, i, j]
         error_info_flow[i, j] = nvar_results[3, i, j]
 
+results_folder = "results_averaging_atmosphere"
+os.makedirs(results_folder, exist_ok=True)
+
 # Save results to a CSV file
-output_file = "liang_res_11days_33days_weak_avg.csv"
+output_file = os.path.join(results_folder, "liang_res_11days_10yr_weak_avg.csv")
 csv_headers = [
     "Source", "Target", "InfoFlow", "Error_InfoFlow", "Tau", "Error_Tau", "R", "Error_R"
 ]
@@ -129,7 +130,5 @@ with open(output_file, mode="w", newline="") as file:
     writer.writerow(csv_headers)
     writer.writerows(csv_rows)
 
-print(f"Results saved to {output_file}")
+print(f"Results saved to results_averaging_atmosphere/{output_file}")
 print("Execution time:", time.time() - start)
-
-"""

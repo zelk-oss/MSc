@@ -9,6 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import sys
 import matplotlib.colors as mcolors
+from matplotlib.colors import Normalize
 
 sys.path.insert(0, '/home/chiaraz/thesis')
 from functions_for_maooam import apply_masking
@@ -42,19 +43,18 @@ def load_data(filename, source_subset=None, target_subset=None, tau_range=None, 
         data = data[(data["Tau"] >= tau_range[0]) & (data["Tau"] <= tau_range[1])]
     if r_range:
         data = data[(data["R"] >= r_range[0]) & (data["R"] <= r_range[1])]
-
+    
     return data
 
 # Function to plot matrices with masking
-def plot_matrix(matrices, labels, title, cmap, xlabel, ylabel):
+# change c map here if you don't want the same one
+def plot_matrix(matrices, labels, title, cmap, norm, xlabel, ylabel):
     num_matrices = len(matrices)
     fig, axs = plt.subplots(1, num_matrices, figsize=(5 * num_matrices, 5))
     fig.suptitle(title)
 
-    from matplotlib.colors import Normalize
-
     for i, (matrix, label) in enumerate(zip(matrices, labels)):
-        cax = axs[i].imshow(matrix, cmap=cmap, aspect="auto")
+        cax = axs[i].imshow(matrix, cmap=cmap, norm=norm, aspect="auto")
         axs[i].set_title(label)
         axs[i].set_xlabel(xlabel)
         axs[i].set_ylabel(ylabel)
@@ -84,28 +84,37 @@ matrices_tau = {}
 matrices_r = {}
 for label, file in file_names.items():
     df = load_data(file)
-    tau_matrix, r_matrix, _, _ = apply_masking(df, use_masking=False)
+    tau_matrix, r_matrix, _, _ = apply_masking(df, use_masking=True)
     data[label] = df
-    matrices_tau[label] = tau_matrix
+    # the empty matrix becomes the result of apply masking
+    matrices_tau[label] = tau_matrix    
     matrices_r[label] = r_matrix
 
 
+# Rescale Tau matrices
+max_tau = max(np.max(matrix) for matrix in matrices_tau.values())  # Get global max
+rescaled_tau_matrices = {key: matrix / max_tau for key, matrix in matrices_tau.items()}  # Normalize
+
 # Plot masked Tau matrices
 plot_matrix(
-    matrices=[matrices_tau[key] for key in file_names.keys()],
+    matrices=[rescaled_tau_matrices[key] for key in file_names.keys()],
     labels=list(file_names.keys()),
     title=r"Atmospheric and oceanic averaged data, $d = 1.1e^{-7}$: $\tau_{j \to i}$ comparison",
-    cmap="Greens",
+    cmap="Purples",
+    norm=None,
+    #norm=Normalize(vmin=0, vmax=1),  # Ensure the color map is correctly scaled
     xlabel="Target Variable",
     ylabel="Source Variable",
 )
 
 # Plot masked R matrices
+norm=Normalize(vmin=-1, vmax = 1)
 plot_matrix(
     matrices=[matrices_r[key] for key in file_names.keys()],
     labels=list(file_names.keys()),
     title=r"Atmospheric and oceanic averaged data, $d = 1.1e^{-7}$: R comparison",
     cmap="RdBu",
+    norm=norm,
     xlabel="Target Variable",
     ylabel="Source Variable",
 )
