@@ -46,7 +46,7 @@ def load_data(filename, source_subset=None, target_subset=None, tau_range=None, 
     
     return data
 
-# Function to plot matrices with masking
+# Function to plot matrices
 # change c map here if you don't want the same one
 def plot_matrix(matrices, labels, title, cmap, norm, xlabel, ylabel):
     num_matrices = len(matrices)

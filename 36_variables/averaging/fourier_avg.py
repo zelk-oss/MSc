@@ -16,7 +16,7 @@ start = time.time()
 
 # Load time series data
 accelerate = 1
-file_path = '../../../data_thesis/data_1e5points_1000ws/evol_fields_1e-8.dat'
+file_path = '../../../data_thesis/data_1e5points_1000ws/evol_fields_1_1e-7.dat'
 data_in_file = []
 
 with open(file_path, 'r') as file:
@@ -45,11 +45,10 @@ select_vars = list(range(1, 37))
 select_time_series_10yr_averaging = time_series_10yr_averaging[select_vars, :]
 print("length of the new time series: ", np.shape(select_time_series_10yr_averaging)) # 36 variables left 
 
+"""
+this is for TE alysis: saving some data
+"""
 # save to file a chunk of this file for the TE analysis 
-
-import os
-import numpy as np  # Ensure numpy is imported for array handling
-
 def keep_middle_window(input_array, output_file):
     # Ensure the output folder exists
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
@@ -59,7 +58,7 @@ def keep_middle_window(input_array, output_file):
     print(f"Total points: {total_points}")
 
     # Parameters
-    window_size = 6500  # Number of points to keep
+    window_size = 12500  # Number of points to keep
     middle_index = total_points // 2
     half_window = window_size // 2
 
@@ -77,9 +76,10 @@ def keep_middle_window(input_array, output_file):
     print(f"Successfully kept a window of {window_size} points around the middle. Output saved to {output_file}.")
 
 # Keeping a chunk of data for TE analysis (very slow)
-#keep_middle_window(select_time_series_10yr_averaging, "window_for_TE/10yr_strong_window")
+keep_middle_window(select_time_series_10yr_averaging, "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/avg_atmo/10yr_strong_largewindow")
 
 
+"""
 # Compute Liang's function
 nvar_results = np.array(compute_liang_nvar(select_time_series_10yr_averaging, 1, 1000))
 
@@ -95,7 +95,7 @@ error_info_flow = np.empty((num_vars, num_vars))
 for i in range(num_vars):
     for j in range(num_vars):
         info_flow[i, j] = nvar_results[0, i, j]
-        tau_nvar[i, j] = np.abs(nvar_results[1, i, j])
+        tau_nvar[i, j] = nvar_results[1, i, j]
         r_nvar[i, j] = nvar_results[2, i, j]
         error_tau_nvar[i, j] = nvar_results[4, i, j]
         error_r_nvar[i, j] = nvar_results[5, i, j]
@@ -105,7 +105,7 @@ results_folder = "results_averaging_atmosphere"
 os.makedirs(results_folder, exist_ok=True)
 
 # Save results to a CSV file
-output_file = os.path.join(results_folder, "liang_res_11days_10yr_weak_avg.csv")
+output_file = os.path.join(results_folder, "liang_res_11days_10yr_strong_avg.csv")
 csv_headers = [
     "Source", "Target", "InfoFlow", "Error_InfoFlow", "Tau", "Error_Tau", "R", "Error_R"
 ]
@@ -131,4 +131,4 @@ with open(output_file, mode="w", newline="") as file:
     writer.writerows(csv_rows)
 
 print(f"Results saved to results_averaging_atmosphere/{output_file}")
-print("Execution time:", time.time() - start)
+print("Execution time:", time.time() - start)"""

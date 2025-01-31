@@ -236,7 +236,7 @@ def is_extreme_value(values, threshold=0.999):
 
 import numpy as np
 
-def apply_masking(data, source_column="Source", target_column="Target", 
+def apply_masking(data, threshold_for_extremes, source_column="Source", target_column="Target", 
                   tau_column="Tau", tau_error_column="Error_Tau",
                   r_column="R", r_error_column="Error_R", use_masking=True):
     """
@@ -279,7 +279,7 @@ def apply_masking(data, source_column="Source", target_column="Target",
             r_values.append(r_value)
 
     # Identify extreme values
-    tau_extreme_mask = is_extreme_value(tau_values)  # Top x% are marked True
+    tau_extreme_mask = is_extreme_value(tau_values, threshold_for_extremes)  # Top x% are marked True
 
     # Convert lists to numpy arrays for indexing
     tau_values = np.array(tau_values)
