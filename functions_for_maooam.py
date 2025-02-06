@@ -223,13 +223,22 @@ def is_extreme_value(values, threshold=0.999):
         array: Boolean mask indicating whether each value is in the top 1%.
     """
     values = np.array(values)
+    
+    if values.size == 0:  # Handle empty input
+        return np.array([], dtype=bool)
+    
     percentile_threshold = np.percentile(values, threshold * 100)  # 99th percentile
-    print("threshold: ", percentile_threshold)
-    for j in range(0, len(values)):
-        if(values[j] >= percentile_threshold): 
-            print("exceeding value: ", values[j])
-    # I could implement for more safety that if there are too little strange values for the threshold chosen 
-    # it doesn't mess up 
+    print("threshold:", percentile_threshold)
+
+    # Check if the threshold is NaN, infinite, or too large
+    if not np.isfinite(percentile_threshold):
+        print("Warning: Computed percentile is not a valid number. Returning all False mask.")
+        return np.zeros_like(values, dtype=bool)
+    
+    for value in values:
+        if value >= percentile_threshold:
+            print("exceeding value:", value)
+
     return values >= percentile_threshold  # Boolean mask for extreme high values
 
 # definitely need to do this better. it's not about percentiles it's about extremes. s

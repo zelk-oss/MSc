@@ -16,7 +16,7 @@ start = time.time()
 
 # Load time series data
 accelerate = 1
-file_path = '../../../data_thesis/data_1e5points_1000ws/evol_fields_1_1e-7.dat'
+file_path = '../../../data_thesis/data_1e5points_1000ws/evol_fields_1e-8.dat'
 data_in_file = []
 
 with open(file_path, 'r') as file:
@@ -48,6 +48,8 @@ print("length of the new time series: ", np.shape(select_time_series_10yr_averag
 """
 this is for TE alysis: saving some data
 """
+
+"""
 # save to file a chunk of this file for the TE analysis 
 def keep_middle_window(input_array, output_file):
     # Ensure the output folder exists
@@ -76,12 +78,11 @@ def keep_middle_window(input_array, output_file):
     print(f"Successfully kept a window of {window_size} points around the middle. Output saved to {output_file}.")
 
 # Keeping a chunk of data for TE analysis (very slow)
-keep_middle_window(select_time_series_10yr_averaging, "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/avg_atmo/10yr_strong_largewindow")
-
-
+keep_middle_window(select_time_series_10yr_averaging, "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/avg_atmo/100yr_strong_largewindow")
 """
+
 # Compute Liang's function
-nvar_results = np.array(compute_liang_nvar(select_time_series_10yr_averaging, 1, 1000))
+nvar_results = np.array(compute_liang_nvar(select_time_series_10yr_averaging, 1, 3))
 
 # Prepare arrays for results
 num_vars = len(select_vars)
@@ -105,7 +106,7 @@ results_folder = "results_averaging_atmosphere"
 os.makedirs(results_folder, exist_ok=True)
 
 # Save results to a CSV file
-output_file = os.path.join(results_folder, "liang_res_11days_10yr_strong_avg.csv")
+output_file = os.path.join(results_folder, "test.csv")
 csv_headers = [
     "Source", "Target", "InfoFlow", "Error_InfoFlow", "Tau", "Error_Tau", "R", "Error_R"
 ]
@@ -131,4 +132,4 @@ with open(output_file, mode="w", newline="") as file:
     writer.writerows(csv_rows)
 
 print(f"Results saved to results_averaging_atmosphere/{output_file}")
-print("Execution time:", time.time() - start)"""
+print("Execution time:", time.time() - start)

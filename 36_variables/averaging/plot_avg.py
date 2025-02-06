@@ -1,7 +1,9 @@
 """
 Here I plot the results of LKIF multivariate computation. 
-Interesting to note that the masking of non-significant values removes all the anticorrelations 
-and in general it's quite impactful 
+A masking function is implemented to remove non-significant values and extremal values 
+(actually this has to be modified and made better)
+The matrices are rescaled with respect to a global maximum for comparison purposes 
+enjoy
 """
 
 import numpy as np
@@ -9,7 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import sys
 import matplotlib.colors as mcolors
-from matplotlib.colors import Normalize
+from matplotlib.colors import Normalize, LinearSegmentedColormap
 
 sys.path.insert(0, '/home/chiaraz/thesis')
 from functions_for_maooam import apply_masking
@@ -72,11 +74,11 @@ def plot_matrix(matrices, labels, title, cmap, norm, xlabel, ylabel):
     plt.show()
 
 # File names
-file_names = {"original data": "liang_res_11days_0_avg.csv", 
-               "33 days": "liang_res_11days_33days_avg.csv", 
-               "1 year":"liang_res_11days_1yr_avg.csv", 
-               "10 years" : "liang_res_11days_10yr_avg.csv"}
-avg_days = [0, 33, 365.25, 3652.5]  # Corresponding averaging periods
+file_names = {"original data": "results_averaging_atmosphere/liang_res_11days_0_strong_avg.csv", 
+               "10 years": "results_averaging_atmosphere/liang_res_11days_10yr_strong_avg.csv", 
+               "100 years":"results_averaging_atmosphere/liang_res_11days_100yr_strong_avg.csv"
+               }
+avg_years = [0, 10, 100]  # Corresponding averaging periods
 
 # Load and process data with masking
 data = {}
@@ -84,24 +86,32 @@ matrices_tau = {}
 matrices_r = {}
 for label, file in file_names.items():
     df = load_data(file)
-    tau_matrix, r_matrix, _, _ = apply_masking(df, use_masking=True)
+    tau_matrix, r_matrix, _, _ = apply_masking(df, 0.999, use_masking=True)
     data[label] = df
     # the empty matrix becomes the result of apply masking
     matrices_tau[label] = tau_matrix    
     matrices_r[label] = r_matrix
 
 
-# Rescale Tau matrices
-max_tau = max(np.max(matrix) for matrix in matrices_tau.values())  # Get global max
-rescaled_tau_matrices = {key: matrix / max_tau for key, matrix in matrices_tau.items()}  # Normalize
+# Rescale Tau matrices after removing extreme values
+rescaled_tau_matrices = {}
+
+# Flatten all matrices and remove extreme values before finding the global max
+all_values = np.concatenate([matrix.flatten() for matrix in matrices_tau.values()])
+global_max_tau = np.max(np.abs(all_values))  # Global max after filtering
+
+# Normalize each matrix using the global max
+for key, matrix in matrices_tau.items():
+    rescaled_tau_matrices[key] = matrix / global_max_tau  # Normalize globally
 
 # Plot masked Tau matrices
+norm = Normalize(vmin=-1, vmax = 1)
 plot_matrix(
     matrices=[rescaled_tau_matrices[key] for key in file_names.keys()],
     labels=list(file_names.keys()),
     title=r"Atmospheric and oceanic averaged data, $d = 1.1e^{-7}$: $\tau_{j \to i}$ comparison",
-    cmap="Purples",
-    norm=None,
+    cmap = LinearSegmentedColormap.from_list("custom_cmap", ["darkblue", "white", "darkorange"], N=512),
+    norm=norm,
     #norm=Normalize(vmin=0, vmax=1),  # Ensure the color map is correctly scaled
     xlabel="Target Variable",
     ylabel="Source Variable",
@@ -113,7 +123,7 @@ plot_matrix(
     matrices=[matrices_r[key] for key in file_names.keys()],
     labels=list(file_names.keys()),
     title=r"Atmospheric and oceanic averaged data, $d = 1.1e^{-7}$: R comparison",
-    cmap="RdBu",
+    cmap="PiYG",
     norm=norm,
     xlabel="Target Variable",
     ylabel="Source Variable",
