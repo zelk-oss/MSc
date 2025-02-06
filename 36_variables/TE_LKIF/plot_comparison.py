@@ -65,13 +65,13 @@ def load_LKIF_data(file_names, source_subset=None, target_subset=None, tau_range
             df = df[(df["R"] >= r_range[0]) & (df["R"] <= r_range[1])]
 
         # Apply masking
-        tau_matrix, r_matrix, _, _ = apply_masking(df, 0.999, use_masking=True)
+        tau_matrix, r_matrix, _, _ = apply_masking(df, threshold_for_extremes=0.999, use_masking=True)
         data[label] = df
         matrices_tau[label] = tau_matrix
         matrices_r[label] = r_matrix
 
     # Rescale Tau matrices
-    max_tau = max(np.max(matrix) for matrix in matrices_tau.values() if matrix.size > 0)  # Avoid empty matrices
+    max_tau = max(np.max(np.abs(matrix)) for matrix in matrices_tau.values() if matrix.size > 0)  # Avoid empty matrices
     rescaled_tau_matrices = {key: matrix / max_tau for key, matrix in matrices_tau.items()} if max_tau > 0 else matrices_tau
 
     return rescaled_tau_matrices, matrices_r
@@ -100,15 +100,16 @@ def load_TE_data(filename, pvalue):
         te_value = row['TE_Kraskov']
         p_value = row['P-value']
         te_matrix[source, destination] = te_value
+        print("Te value: ", te_value)
         p_value_matrix[source, destination] = p_value
 
     # Apply masking
     masked_te_matrix = np.ma.masked_where(p_value_matrix > pvalue, te_matrix)
-
+    print("masked matrix", masked_te_matrix)
     # rescale value to -1, 1
-    max_te = np.max(masked_te_matrix)
-    rescaled_masked_te_matrix = masked_te_matrix / max_te if max_te > 0 else masked_te_matrix
-
+    max_te = np.max(np.abs(masked_te_matrix))
+    rescaled_masked_te_matrix = masked_te_matrix / max_te
+    print("rescaled te matrix", rescaled_masked_te_matrix)
     return rescaled_masked_te_matrix  # Returns a 36×36 masked array
 
 # Function to plot matrices side by side
@@ -141,8 +142,8 @@ def plot_matrices(matrices, labels, title, cmaps, norms, xlabel, ylabel):
     plt.show()
 
 # File names
-file_namesLKIF = {"LKIF": "../averaging/liang_res_11days_0_weak_avg.csv"}           
-filenameTE = "data_TE/results_weak_largewindow.csv"
+file_namesLKIF = {"LKIF": "../averaging/results_averaging_atmosphere/liang_res_11days_100yr_strong_avg.csv"}           
+filenameTE = "data_TE/results_100yr_strong_largewindow.csv"
 
 # Extract tau and r matrices
 rescaled_tau, r = load_LKIF_data(file_namesLKIF)
@@ -154,23 +155,23 @@ matrices_to_plot = [rescaled_tau['LKIF'], rescaled_te, r['LKIF']]
 
 # Define colormap per matrix type
 colormap_dict = {
-    r"$\tau$": LinearSegmentedColormap.from_list(
-    "white_to_color", ["white", "darkorange"], N=256),
-    "TE": "PiYG",
+    r"normalized $\tau$": "PiYG",
+    "normalized TE": "PiYG",
     "R": "PiYG"
 }
 
 # Define normalization for a specific matrix (e.g., TE)
 norm_dict = {
-    "TE": Normalize(vmin=-1, vmax=1),  # Only normalize TE
+    r"normalized $\tau$": Normalize(vmin=-1, vmax=1),
+    "normalized TE": Normalize(vmin=-1, vmax=1),  # Only normalize TE
     "R": Normalize(vmin= -1, vmax = 1)
 }
 
 # Plot matrices
 plot_matrices(
     matrices=matrices_to_plot,
-    labels=[r"$\tau$", "TE", "R"],
-    title=r"Fourier components bivariate analysis, $d = 1.e^{-8}$",
+    labels=[r"normalized $\tau$", "normalized TE", "R"],
+    title=r"Bivariate analysis of Fourier components - 100 years running mean over atmospheric components; $d = 1.1e^{-7}$",
     cmaps=colormap_dict,
     norms=norm_dict,
     xlabel="Target Variable",
