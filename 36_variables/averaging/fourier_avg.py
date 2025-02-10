@@ -2,6 +2,7 @@ import numpy as np
 import csv
 import time
 import os 
+import matplotlib.pyplot as plt
 
 # Import Liang's bivariate formula
 import sys
@@ -32,11 +33,11 @@ with open(file_path, 'r') as file:
                 print(f"Could not convert line to floats: {line}")
 
 # Convert data to numpy array and transpose ==> (nvar, N) matrix
-time_series = np.transpose(np.array(data_in_file))
+time_series = np.transpose(np.array(data_in_file, dtype=np.float128))
 print("shape of original time series: ", np.shape(time_series))
 
 # Apply averaging
-window_size_10yr= 3652.4
+window_size_10yr= 365.24 * 100
 time_series_10yr_averaging = average_time_series(time_series, window_size_10yr, True)
 
 
@@ -44,6 +45,7 @@ time_series_10yr_averaging = average_time_series(time_series, window_size_10yr, 
 select_vars = list(range(1, 37))
 select_time_series_10yr_averaging = time_series_10yr_averaging[select_vars, :]
 print("length of the new time series: ", np.shape(select_time_series_10yr_averaging)) # 36 variables left 
+
 
 """
 this is for TE alysis: saving some data
@@ -82,7 +84,7 @@ keep_middle_window(select_time_series_10yr_averaging, "/home/chiaraz/data_thesis
 """
 
 # Compute Liang's function
-nvar_results = np.array(compute_liang_nvar(select_time_series_10yr_averaging, 1, 3))
+nvar_results = np.array(compute_liang_nvar(select_time_series_10yr_averaging, 1, 5))
 
 # Prepare arrays for results
 num_vars = len(select_vars)

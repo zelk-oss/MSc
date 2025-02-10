@@ -31,6 +31,8 @@ def is_significant(TAB, error, alpha):
         # Compare p-value with alpha
         significant = p_value < alpha
 
+        # in realtà anche qua probabilmente dovrei mettere lo stesso metodo che uso per i punti della univariata 
+
         return significant, Z, p_value
 
 def information_flow_subspace(xx, r, s, np_val=1, n_iter=1000, alpha=0.05):

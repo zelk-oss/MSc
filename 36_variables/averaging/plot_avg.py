@@ -74,9 +74,10 @@ def plot_matrix(matrices, labels, title, cmap, norm, xlabel, ylabel):
     plt.show()
 
 # File names
-file_names = {"original data": "results_averaging_atmosphere/liang_res_11days_0_strong_avg.csv", 
-               "10 years": "results_averaging_atmosphere/liang_res_11days_10yr_strong_avg.csv", 
-               "100 years":"results_averaging_atmosphere/liang_res_11days_100yr_strong_avg.csv"
+file_names = {"original data": "results_averaging_atmosphere/liang_res_11days_0_weak_avg.csv", 
+               "1 year": "results_averaging_atmosphere/liang_res_11days_1yr_weak_avg.csv",
+               "10 years": "results_averaging_atmosphere/liang_res_11days_10yr_weak_avg.csv", 
+               "100 years":"results_averaging_atmosphere/liang_res_11days_100yr_weak_avg.csv"
                }
 avg_years = [0, 10, 100]  # Corresponding averaging periods
 
@@ -98,7 +99,7 @@ rescaled_tau_matrices = {}
 
 # Flatten all matrices and remove extreme values before finding the global max
 all_values = np.concatenate([matrix.flatten() for matrix in matrices_tau.values()])
-global_max_tau = np.max(np.abs(all_values))  # Global max after filtering
+global_max_tau = np.nanmax(np.abs(all_values))  # Global max after filtering
 
 # Normalize each matrix using the global max
 for key, matrix in matrices_tau.items():
@@ -109,7 +110,7 @@ norm = Normalize(vmin=-1, vmax = 1)
 plot_matrix(
     matrices=[rescaled_tau_matrices[key] for key in file_names.keys()],
     labels=list(file_names.keys()),
-    title=r"Atmospheric and oceanic averaged data, $d = 1.1e^{-7}$: $\tau_{j \to i}$ comparison",
+    title=r"Atmospheric and oceanic averaged data, $d = 1.e^{-8}$: $\tau_{j \to i}$ comparison",
     cmap = LinearSegmentedColormap.from_list("custom_cmap", ["darkblue", "white", "darkorange"], N=512),
     norm=norm,
     #norm=Normalize(vmin=0, vmax=1),  # Ensure the color map is correctly scaled
@@ -122,7 +123,7 @@ norm=Normalize(vmin=-1, vmax = 1)
 plot_matrix(
     matrices=[matrices_r[key] for key in file_names.keys()],
     labels=list(file_names.keys()),
-    title=r"Atmospheric and oceanic averaged data, $d = 1.1e^{-7}$: R comparison",
+    title=r"Atmospheric and oceanic averaged data, $d = 1.e^{-8}$: R comparison",
     cmap="PiYG",
     norm=norm,
     xlabel="Target Variable",

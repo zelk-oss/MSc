@@ -142,8 +142,8 @@ def plot_matrices(matrices, labels, title, cmaps, norms, xlabel, ylabel):
     plt.show()
 
 # File names
-file_namesLKIF = {"LKIF": "../averaging/results_averaging_atmosphere/liang_res_11days_100yr_strong_avg.csv"}           
-filenameTE = "data_TE/results_100yr_strong_largewindow.csv"
+file_namesLKIF = {"LKIF": "../averaging/results_averaging_atmosphere/liang_res_11days_100yr_weak_avg.csv"}           
+filenameTE = "data_TE/results_100yr_weak_largewindow.csv"
 
 # Extract tau and r matrices
 rescaled_tau, r = load_LKIF_data(file_namesLKIF)
@@ -171,7 +171,7 @@ norm_dict = {
 plot_matrices(
     matrices=matrices_to_plot,
     labels=[r"normalized $\tau$", "normalized TE", "R"],
-    title=r"Bivariate analysis of Fourier components - 100 years running mean over atmospheric components; $d = 1.1e^{-7}$",
+    title=r"Bivariate analysis of Fourier components - 100 years running mean over atmospheric components; $d = 1.e^{-8}$",
     cmaps=colormap_dict,
     norms=norm_dict,
     xlabel="Target Variable",

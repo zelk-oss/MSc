@@ -249,7 +249,7 @@ def apply_masking(data, threshold_for_extremes, source_column="Source", target_c
                   tau_column="Tau", tau_error_column="Error_Tau",
                   r_column="R", r_error_column="Error_R", use_masking=True):
     """
-    Function to set not-singificant and extreme values to 0 in Tau and R matrices.
+    Function to set not-significant and extreme values to 0 in Tau and R matrices.
     """
     source_vars = sorted(data[source_column].str.replace("Var", "").astype(int).unique())
     target_vars = sorted(data[target_column].str.replace("Var", "").astype(int).unique())
