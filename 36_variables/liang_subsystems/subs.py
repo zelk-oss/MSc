@@ -16,8 +16,8 @@ start = time.time()
 
 # Load time series data
 accelerate = 1
-file_path = '/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/avg_atmo/'
-file_name = '100yr_weak_largewindow'
+file_path = '/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/batch_avg/'
+file_name = '20w'
 file = file_path + file_name
 #file_path = '/home/chiaraz/data_thesis/data_1e5points_1000ws/evol_fields_1e-8.dat'
 data_in_file = []
@@ -50,7 +50,7 @@ r = 20
 s = 36
 
 # Call the function
-results = information_flow_subspace(time_series, r-1, s-1, np_val=1, n_iter=1000, alpha=0.01)
+results = information_flow_subspace(time_series, r-1, s-1, np_val=1, n_iter=100, alpha=0.01)
 
 # Print results
 print("TAB:", results["TAB"])
@@ -62,6 +62,7 @@ print("Significant TBA:", results["significance_TBA (bool, Z, p-value)"])
 
 print("elapsed time: ", time.time() - start)
 
+"""
 # Extract file name and change extension to .csv
 output_file = os.path.splitext(file_name)[0] + ".csv"
 
@@ -82,3 +83,4 @@ with open(output_file, 'w', newline='') as csvfile:
 
 print(f"Results saved to {output_file}")
 print("elapsed time: ", time.time() - start)
+"""

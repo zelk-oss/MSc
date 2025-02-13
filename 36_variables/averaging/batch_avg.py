@@ -17,7 +17,7 @@ start = time.time()
 
 # Load time series data
 accelerate = 1
-file_path = '../../../data_thesis/data_1e5points_1000ws/evol_fields_1_1e-7.dat'
+file_path = '../../../data_thesis/data_1e5points_1000ws/evol_fields_1e-8.dat'
 data_in_file = []
 
 with open(file_path, 'r') as file:
@@ -36,8 +36,12 @@ with open(file_path, 'r') as file:
 time_series = np.transpose(np.array(data_in_file, dtype=np.float128))
 print("shape of original time series: ", np.shape(time_series))
 
-days = 20
-for i in range (1,101):
+#days = 20
+vector_days = np.logspace(1.0, 4.2, 200) # 200 values logarithmically spaced from 1e1 to 1e4.2 = 40 years 
+
+#for i in range (1,101):
+for i in range(3,len(vector_days)):
+    days = vector_days[i]
     # Apply averaging
     # window size is in days 
     window_size= days
@@ -64,7 +68,7 @@ for i in range (1,101):
         print(f"Total points: {total_points}")
 
         # Parameters
-        window_size = 12500  # Number of points to keep
+        window_size = 10000 # Number of points to keep
         middle_index = total_points // 2
         half_window = window_size // 2
 
@@ -82,16 +86,16 @@ for i in range (1,101):
         print(f"Successfully kept a window of {window_size} points around the middle. Output saved to {output_file}.")
 
     # Keeping a chunk of data for TE analysis (very slow)
-    keep_middle_window(select_time_series_averaging, f"/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/bash_avg/{days}")
+    keep_middle_window(select_time_series_averaging, f"/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/batch_log_avg/{i}w")
     
-
+    """
     if np.any(np.isnan(time_series)) or np.any(np.isinf(time_series)):
         raise ValueError("Time series contains NaN or Inf values!")
     time_series[np.isnan(time_series)] = 0
     time_series[np.isinf(time_series)] = 0
 
     # Compute Liang's function
-    nvar_results = np.array(compute_liang_nvar(select_time_series_averaging, 1, 1))
+    nvar_results = np.array(compute_liang_nvar(select_time_series_averaging, 1, 100))
 
     # Prepare arrays for results
     num_vars = len(select_vars)
@@ -115,7 +119,7 @@ for i in range (1,101):
     os.makedirs(results_folder, exist_ok=True)
 
     # Save results to a CSV file
-    output_file = os.path.join(results_folder, f"{days}.txt")
+    output_file = os.path.join(results_folder, f"{days}s.txt")
     csv_headers = [
         "Source", "Target", "InfoFlow", "Error_InfoFlow", "Tau", "Error_Tau", "R", "Error_R"
     ]
@@ -142,7 +146,6 @@ for i in range (1,101):
 
 
     print(f"Results saved to bash_avg/{output_file}")
-    days += 10
-    print(days)
+    """
 
 print("Execution time:", time.time() - start)
