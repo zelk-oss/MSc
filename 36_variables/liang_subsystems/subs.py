@@ -17,7 +17,7 @@ start = time.time()
 # Load time series data
 accelerate = 1
 file_path = '/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/avg_atmo/'
-file_name = '100yr_strong_largewindow'
+file_name = '100yr_weak_largewindow'
 file = file_path + file_name
 #file_path = '/home/chiaraz/data_thesis/data_1e5points_1000ws/evol_fields_1e-8.dat'
 data_in_file = []
@@ -37,12 +37,12 @@ with open(file, 'r') as file:
 # Convert data to numpy array. shape: N x nvar 
 # traspose the matrix if it is nvar*N 
 if np.array(data_in_file).shape[1] > np.array(data_in_file).shape[0]:
-    time_series = np.transpose(np.array(data_in_file)) # delete first column = time points 
+    time_series = np.transpose(np.array(data_in_file))
 else: 
-    time_series = np.array(data_in_file) # delete first column = time points 
+    time_series = np.array(data_in_file)  
 
 if time_series.shape[1] == 37: 
-    time_series = np.delete(time_series, 0, 1)
+    time_series = np.delete(time_series, 0, 1) # delete first column = time points
 
 print("shape of time series: ", np.shape(time_series))
 

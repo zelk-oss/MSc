@@ -111,7 +111,8 @@ if __name__ == "__main__":
     model_parameters.gotemperature_params.set_params({'gamma': 5.6e8, 'T0': 301.46})
 
     model_parameters.atemperature_params.set_insolation(103.3333, 0)
-    model_parameters.gotemperature_params.set_insolation(310., 0) # this is one parameter that influences when the cool LFV develops 
+    model_parameters.gotemperature_params.set_insolation(310., 0) # this is one parameter that influences when the cool LFV develops
+    # the one they call Co in the 2015 paper  
 
     if print_parameters:
         print("")
