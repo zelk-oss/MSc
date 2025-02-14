@@ -21,7 +21,7 @@ output_folder = "batch_log_avg/"
 vector_days = np.logspace(1.0, 4.2, 200) # 200 values logarithmically spaced from 1e1 to 1e4.2 = 40 years 
 
 # Open the CSV file for writing all results
-output_file = output_folder + "combined_log_results_strong.csv"
+output_file = output_folder + "additional_strong.csv"
 
 # Prepare the header for the CSV file (first row)
 header = ["File", "TAB", "TBA", "Error TAB", "Error TBA", "Significant TAB", "Significant TBA"]
@@ -34,9 +34,8 @@ with open(output_file, 'w', newline='') as csvfile:
 # Loop through the files
 #for i in range(1, 101): this is the option for linspace data from 20 days average to 1000 days average 
     # Define the file name dynamically
-for i in range(0,len(vector_days)):
-    days = vector_days[i]
-    file_name = f'{days}s'
+for i in range(199,201):
+    file_name = f'{i}s'
     file = file_path + file_name
     data_in_file = []
 
@@ -70,7 +69,7 @@ for i in range(0,len(vector_days)):
     s = 36
 
     # Call the function to compute results
-    results = information_flow_subspace(time_series, r-1, s-1, np_val=1, n_iter=100, alpha=0.01)
+    results = information_flow_subspace(time_series, r-1, s-1, np_val=1, n_iter=100, alpha=0.05)
 
     # Write the results to the combined CSV file
     with open(output_file, 'a', newline='') as csvfile:
@@ -93,6 +92,6 @@ for i in range(0,len(vector_days)):
     print(f"Results for {file_name} saved to {output_file}")
     
     # Increment the day value for the next file
-    days += 10
+    #days += 10
 
 print("Elapsed time: ", time.time() - start)
