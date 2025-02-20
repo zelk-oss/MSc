@@ -1,6 +1,8 @@
 """
 This script computes the subsystems LKIF calling the function from file
-"compute_liang_subsystems". Also implements p-value analysis
+"compute_liang_subsystems". Also implements p-value analysis but not to be trusted completely 
+This version of the file handles a batch of files with different lags or averaged applied, 
+realized to plot the |LKIF| as a function of lagging or averaging 
 """
 import numpy as np
 import csv
@@ -14,14 +16,14 @@ from compute_liang_subsystems import information_flow_subspace
 start = time.time()
 
 # Define the input and output directories
-file_path = '/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/batch_log_avg/'
-output_folder = "batch_log_avg/"
+file_path = '/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/batch_log_lag/'
+output_folder = "batch_log_lag/"
 
 #days = 20   # for linspace data 
-vector_days = np.logspace(1.0, 4.2, 200) # 200 values logarithmically spaced from 1e1 to 1e4.2 = 40 years 
+vector_days = np.logspace(1.0, 4.2, 100) # 200 values logarithmically spaced from 1e1 to 1e4.2 = 40 years 
 
 # Open the CSV file for writing all results
-output_file = output_folder + "additional_strong.csv"
+output_file = output_folder + "log_results_weak.csv"
 
 # Prepare the header for the CSV file (first row)
 header = ["File", "TAB", "TBA", "Error TAB", "Error TBA", "Significant TAB", "Significant TBA"]
@@ -34,8 +36,8 @@ with open(output_file, 'w', newline='') as csvfile:
 # Loop through the files
 #for i in range(1, 101): this is the option for linspace data from 20 days average to 1000 days average 
     # Define the file name dynamically
-for i in range(199,201):
-    file_name = f'{i}s'
+for i in range(0,101):
+    file_name = f'{i}w'
     file = file_path + file_name
     data_in_file = []
 

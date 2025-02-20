@@ -54,7 +54,7 @@ if __name__ == "__main__":
     
     accelerate = 1
     
-    file_path = '../../myqgs/data_1e5points_1000ws/evol_fields_1_1e-7.dat'
+    file_path = '../../../data_thesis/data_1e5points_1000ws/evol_fields_1_1e-7.dat'
 
     data_in_file = []
 
@@ -89,7 +89,8 @@ if __name__ == "__main__":
 
     for i, days in enumerate(lags):
         lagged_data = introduce_lag_fourier(select_time_series, days, True)
-        output_filename = os.path.join(results_folder, f"results_data11days_STRONG_lag_{lags[i]}days.csv")
-        compute_and_save_liang_results(lagged_data, select_vars, output_filename)
+        print("shape of lagged data", np.shape(lagged_data))
+        #output_filename = os.path.join(results_folder, f"results_data11days_STRONG_lag_{lags[i]}days.csv")
+        #compute_and_save_liang_results(lagged_data, select_vars, output_filename)
 
     print("Execution time =", time.time() - start)
