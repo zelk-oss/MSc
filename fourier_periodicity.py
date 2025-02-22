@@ -16,6 +16,7 @@ def analyze_sinusoidal(file_path):
     
     # First column as time
     time_points = data[:, 0]
+    # change visualisation to days 
     max_time = time_points[len(time_points)-1]*0.11 / (365.24/12)
     time = np.linspace(0, max_time, len(time_points))
     total_time = time[-1] - time[0]
@@ -23,7 +24,7 @@ def analyze_sinusoidal(file_path):
     print("data interval", data_interval)
     
     # Loop through all columns
-    for column_index in range(11,12):
+    for column_index in range(0,2):
     #range(20, data.shape[1]):
         # Extract the time series
         time_series = data[:, column_index]
@@ -98,5 +99,5 @@ def analyze_sinusoidal(file_path):
         """
 
 # Example usage
-file_path = "../data_toobig/data_1e5points_1000ws/evol_fields_1e-8.dat"  # Replace with your file path
+file_path = "../data_thesis/data_1e5points_1000ws/evol_fields_1_1e-7.dat"  # Replace with your file path
 analyze_sinusoidal(file_path)

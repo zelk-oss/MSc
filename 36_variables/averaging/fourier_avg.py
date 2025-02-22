@@ -17,7 +17,7 @@ start = time.time()
 
 # Load time series data
 accelerate = 1
-file_path = '../../../data_thesis/data_1e5points_1000ws/evol_fields_1_1e-7.dat'
+file_path = '../../../data_thesis/data_1e5points_1000ws/evol_fields_1e-8.dat'
 data_in_file = []
 
 with open(file_path, 'r') as file:
@@ -37,21 +37,20 @@ time_series = np.transpose(np.array(data_in_file, dtype=np.float128))
 print("shape of original time series: ", np.shape(time_series))
 
 # Apply averaging
-window_size_10yr= 365.24 * 40
-time_series_10yr_averaging = average_time_series(time_series, window_size_10yr, True)
-
+window_size= 100
+time_series_averaging = average_time_series(time_series, window_size, True)
 
 # Select variables
 select_vars = list(range(1, 37))
-select_time_series_10yr_averaging = time_series_10yr_averaging[select_vars, :]
-print("length of the new time series: ", np.shape(select_time_series_10yr_averaging)) # 36 variables left 
+select_time_series_averaging = time_series_averaging[select_vars, :]
+print("length of the new time series: ", np.shape(select_time_series_averaging)) # 36 variables left 
 
 
 """
 this is for TE alysis: saving some data
 """
 
-"""
+
 # save to file a chunk of this file for the TE analysis 
 def keep_middle_window(input_array, output_file):
     # Ensure the output folder exists
@@ -62,7 +61,7 @@ def keep_middle_window(input_array, output_file):
     print(f"Total points: {total_points}")
 
     # Parameters
-    window_size = 12500  # Number of points to keep
+    window_size = 10000  # Number of points to keep
     middle_index = total_points // 2
     half_window = window_size // 2
 
@@ -80,15 +79,15 @@ def keep_middle_window(input_array, output_file):
     print(f"Successfully kept a window of {window_size} points around the middle. Output saved to {output_file}.")
 
 # Keeping a chunk of data for TE analysis (very slow)
-keep_middle_window(select_time_series_10yr_averaging, "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/avg_atmo/100yr_weak_largewindow")
-"""
+keep_middle_window(select_time_series_averaging, "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/avg_atmo/100days_weak_largewindow")
+
 if np.any(np.isnan(time_series)) or np.any(np.isinf(time_series)):
     raise ValueError("Time series contains NaN or Inf values!")
 time_series[np.isnan(time_series)] = 0
 time_series[np.isinf(time_series)] = 0
 
 # Compute Liang's function
-nvar_results = np.array(compute_liang_nvar(select_time_series_10yr_averaging, 1, 1000))
+nvar_results = np.array(compute_liang_nvar(select_time_series_averaging, 1, 1000))
 
 # Prepare arrays for results
 num_vars = len(select_vars)
@@ -112,7 +111,7 @@ results_folder = "results_averaging_atmosphere"
 os.makedirs(results_folder, exist_ok=True)
 
 # Save results to a CSV file
-output_file = os.path.join(results_folder, "liang_res_11days_40yr_strong_avg.csv")
+output_file = os.path.join(results_folder, "liang_res_11days_100days_weak_avg.csv")
 csv_headers = [
     "Source", "Target", "InfoFlow", "Error_InfoFlow", "Tau", "Error_Tau", "R", "Error_R"
 ]
