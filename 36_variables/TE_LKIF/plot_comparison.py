@@ -74,6 +74,10 @@ def load_LKIF_data(file_names, source_subset=None, target_subset=None, tau_range
     max_tau = max(np.max(np.abs(matrix)) for matrix in matrices_tau.values() if matrix.size > 0)  # Avoid empty matrices
     rescaled_tau_matrices = {key: matrix / max_tau for key, matrix in matrices_tau.items()} if max_tau > 0 else matrices_tau
 
+    # make all the values positive 
+    rescaled_tau_matrices = np.abs(rescaled_tau_matrices)
+    matrices_r = np.abs(matrices_r)
+
     return rescaled_tau_matrices, matrices_r
 
 # Extract data from TE file and rescale 
@@ -110,40 +114,34 @@ def load_TE_data(filename, pvalue):
     max_te = np.max(np.abs(masked_te_matrix))
     rescaled_masked_te_matrix = masked_te_matrix / max_te
     print("rescaled te matrix", rescaled_masked_te_matrix)
+
+    # take absolute value of the matrix 
+    rescaled_masked_te_matrix = np.abs(rescaled_masked_te_matrix)
+
     return rescaled_masked_te_matrix  # Returns a 36×36 masked array
 
-# Function to plot matrices side by side
-def plot_matrices(matrices, labels, title, cmaps, norms, xlabel, ylabel):
-    num_matrices = len(matrices)
-    fig, axs = plt.subplots(1, num_matrices, figsize=(5 * num_matrices, 5))
-    fig.suptitle(title)
 
-    for i, (matrix, label) in enumerate(zip(matrices, labels)):
-        cmap = cmaps.get(label)  # Choose colormap based on matrix type
-        norm = norms.get(label)
-        cax = axs[i].imshow(matrix, cmap=cmap, norm=norm, aspect="auto")
-        axs[i].set_title(label)
-        axs[i].set_xlabel(xlabel)
-        axs[i].set_ylabel(ylabel)
-
-        # Set tick marks
-        num_vars = 36
-        n = 5  # Frequency of ticks
-        ticks = np.arange(0, num_vars, n)
-        tick_labels = np.arange(1, num_vars + 1, n)
-        axs[i].set_xticks(ticks)
-        axs[i].set_yticks(ticks)
-        axs[i].set_xticklabels(tick_labels)
-        axs[i].set_yticklabels(tick_labels)
-
-        fig.colorbar(cax, ax=axs[i], label=label)
-
+def plot_matrices_comparison(matrices_list, labels, cmaps, norms, xlabel, ylabel, titles):
+    num_rows = len(matrices_list)
+    num_cols = len(matrices_list[0])
+    fig, axs = plt.subplots(num_rows, num_cols, figsize=(5 * num_cols, 5 * num_rows))
+    fig.suptitle("Comparison of Methods for Different Averaging Parameters")
+    
+    for row in range(num_rows):
+        for col in range(num_cols):
+            ax = axs[row, col] if num_rows > 1 else axs[col]
+            cax = ax.imshow(matrices_list[row][col], cmap=cmaps[labels[col]], norm=norms[labels[col]], aspect="auto")
+            ax.set_title(f"{labels[col]} - {titles[row]}")
+            ax.set_xlabel(xlabel)
+            ax.set_ylabel(ylabel)
+            fig.colorbar(cax, ax=ax, label=labels[col])
+    
     plt.tight_layout()
     plt.show()
 
 # File names
-file_namesLKIF = {"LKIF": "../averaging/results_averaging_atmosphere/liang_res_11days_100yr_weak_avg.csv"}           
-filenameTE = "data_TE/results_100yr_weak_largewindow.csv"
+file_namesLKIF = {"LKIF": "../averaging/results_averaging_atmosphere/liang_res_11days_100days_weak_avg.csv"}           
+filenameTE = "data_TE/results_weak_100days.csv"
 
 # Extract tau and r matrices
 rescaled_tau, r = load_LKIF_data(file_namesLKIF)
@@ -155,9 +153,9 @@ matrices_to_plot = [rescaled_tau['LKIF'], rescaled_te, r['LKIF']]
 
 # Define colormap per matrix type
 colormap_dict = {
-    r"normalized $\tau$": "PiYG",
-    "normalized TE": "PiYG",
-    "R": "PiYG"
+    r"normalized $\tau$": "Purples",
+    "normalized TE": "Blues",
+    "R": "Greys"
 }
 
 # Define normalization for a specific matrix (e.g., TE)

@@ -92,7 +92,7 @@ def plot_time_series(data, series_index, title="Time Series Plot"):
 ####### FOR TE ########
 #######################
 # save to file a chunk of this file for the TE analysis 
-def keep_middle_window_TE(input_array, output_file):
+def save_middle_window_TE(input_array, output_file):
     # Ensure the output folder exists
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
@@ -180,7 +180,6 @@ fast_mask = reference_series > fast_threshold
 slow_mask = reference_series < slow_threshold
 
 
-"""
 # Apply masks to all time series
 fast_time_series = np.where(fast_mask, time_series, 0)
 slow_time_series = np.where(slow_mask, time_series, 0)
@@ -189,15 +188,15 @@ fast_time_series = keep_middle_window_LKIF(fast_time_series)
 slow_time_series = keep_middle_window_LKIF(slow_time_series)
 
 # Keeping a chunk of data for TE analysis
-keep_middle_window_TE(fast_time_series, "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/fast_slow_dynamics/fast_TE_timeseries_weak_0avg")
-keep_middle_window_TE(slow_time_series, "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/fast_slow_dynamics/slow_TE_timeseries_weak_0avg")
+#save_middle_window_TE(fast_time_series, "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/fast_slow_dynamics/fast_TE_timeseries_weak_0avg")
+#save_middle_window_TE(slow_time_series, "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/fast_slow_dynamics/slow_TE_timeseries_weak_0avg")
 
 
 # liang and output for the fast time series 
-compute_save_liang(fast_time_series, "results_fast_weak_0avg.csv")
+#compute_save_liang(fast_time_series, "results_fast_weak_0avg.csv")
 # liang and output for the slow time series 
-compute_save_liang(slow_time_series, "results_slow_weak_0avg.csv")
-"""
+#compute_save_liang(slow_time_series, "results_slow_weak_0avg.csv")
+
 
 ##############################
 ##### removing points ########
@@ -214,19 +213,17 @@ print("Nuova forma time series FAST con removal:", Rfast_time_series.shape)
 print("Nuova forma time series SLOW con removal :", Rslow_time_series.shape)
 
 # Keeping a chunk of data for TE analysis
-keep_middle_window_TE(Rfast_time_series, "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/fast_slow_dynamics/REMOVEDfast_TE_timeseries_weak_0avg")
-keep_middle_window_TE(Rslow_time_series, "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/fast_slow_dynamics/REMOVEDslow_TE_timeseries_weak_0avg")
+#save_middle_window_TE(Rfast_time_series, "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/fast_slow_dynamics/REMOVEDfast_TE_timeseries_weak_0avg")
+#save_middle_window_TE(Rslow_time_series, "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/fast_slow_dynamics/REMOVEDslow_TE_timeseries_weak_0avg")
 
 # liang and output for the fast time series 
-compute_save_liang(Rfast_time_series, "REMOVEDresults_fast_weak_0avg.csv")
+#compute_save_liang(Rfast_time_series, "REMOVEDresults_fast_weak_0avg.csv")
 # liang and output for the slow time series
-compute_save_liang(Rslow_time_series, "REMOVEDresults_slow_weak_0avg.csv")
+#compute_save_liang(Rslow_time_series, "REMOVEDresults_slow_weak_0avg.csv")
 
 
-"""
 plot_time_series(time_series, 0, title="Original Time Series")
-plot_time_series(slow_time_series, 0, title="Slow Dynamics Time Series")
-plot_time_series(slow_time_series, 11, title="Slow Dynamics Time Series with removed data")
-plot_time_series(fast_time_series, 0, title="Fast Dynamics Time Series")
-plot_time_series(fast_time_series, 11, title="Fast Dynamics Time Series with removed data")
-"""
+plot_time_series(Rslow_time_series, 0, title="Slow Dynamics Time Series")
+plot_time_series(Rslow_time_series, 11, title="Slow Dynamics Time Series with removed data")
+plot_time_series(Rslow_time_series, 22, title="Fast Dynamics Time Series")
+plot_time_series(Rslow_time_series, 29, title="Fast Dynamics Time Series with removed data")

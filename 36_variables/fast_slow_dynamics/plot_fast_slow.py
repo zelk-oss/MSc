@@ -83,7 +83,6 @@ file_names = {"Fast - strong coupling": "results_fast_slow/results_fast_strong_0
                "Fast - weak coupling": "results_fast_slow/results_fast_weak_0avg.csv", 
                "Fast - weak coupling, with removal":"results_fast_slow/REMOVEDresults_fast_weak_0avg.csv"
                }
-avg_years = [0, 10, 100]  # Corresponding averaging periods
 
 # Load and process data with masking
 data = {}
