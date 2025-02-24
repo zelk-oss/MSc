@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import os
 from matplotlib.ticker import FormatStrFormatter
 
+import matplotlib.colors as mcolors
+
 # Global rcParams for font sizes and figure size (A4 portrait)
 plt.rcParams.update({
     'font.size': 12,
@@ -27,23 +29,25 @@ def plot_csv_data(csv_file, plot_scale="log"):
     else:
         vector_days = np.logspace(1.0, 4.2, 101)
     
+    divider = (365.24/12)
+    #divider = 1
     # Map i_values to vector_days and convert to years
-    x_values = vector_days[i_values] / (365.24/12)
+    x_values = vector_days[i_values] / divider
     
     return x_values, te_values, error_values
 
 def plot_four(file_list, titles, save_path="/home/chiaraz/thesis/pictures_thesis/final/methods_comparison/batch/"):
     # Create 4 subplots in one column (4 rows) with high resolution (dpi=300)
-    fig, axes = plt.subplots(4, 1, figsize=(8.27, 11.69), dpi=300)
+    fig, axes = plt.subplots(4, 1, figsize=(9, 13), dpi=300)
     scales = ["log"] * len(file_list)
-    
+    color = 'orangered'
     for ax, scale, csv_file, title in zip(axes, scales, file_list, titles):
         x_values, te_values, error_values = plot_csv_data(csv_file, plot_scale=scale)
         ax.errorbar(x_values, te_values, yerr=error_values, fmt='o', capsize=3, elinewidth=1,
-                    color='blue', ecolor=(0, 0, 1, 0.3), markersize=4, label='transfer entropy')
+                    color=color, ecolor = mcolors.to_rgba(color, alpha=0.3), markersize=4, label='LKIF')
         ax.set_xscale(scale)
         ax.set_xlabel("running mean window size (months)")
-        ax.set_ylabel("transfer entropy")
+        ax.set_ylabel("LKIF (nats)")
         ax.set_title(title)
         ax.legend()
         ax.grid(True, which="both", linestyle="--", linewidth=0.5)
@@ -55,7 +59,7 @@ def plot_four(file_list, titles, save_path="/home/chiaraz/thesis/pictures_thesis
     plt.subplots_adjust(hspace=0.7)
     
     os.makedirs(save_path, exist_ok=True)
-    save_file = os.path.join(save_path, "LKIF_average_plots.png")
+    save_file = os.path.join(save_path, "lkif_avg.png")
     plt.savefig(save_file, dpi=300, bbox_inches='tight')
     #plt.show()
 
@@ -64,7 +68,7 @@ files = [
     "output_LKIF_strong_atmosphere_ocean.csv",
     "output_LKIF_strong_ocean_atmosphere.csv",
     "output_LKIF_weak_atmosphere_ocean.csv",
-    "output_LKIF_strong_ocean_atmosphere.csv"
+    "output_LKIF_weak_ocean_atmosphere.csv"
 ]
 titles = [
     r"Atmosphere $\to$ Ocean - $d = 1.1e^{-7}$",

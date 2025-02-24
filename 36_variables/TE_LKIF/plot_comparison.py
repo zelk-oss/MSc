@@ -1,6 +1,6 @@
 """
 In this script we plot side by side TE, LKIF and R. 
-First step: plotting the non averaged data, everything normalized to -1,1.
+First step: plotting the non averaged data, everything normalized to 0,1.
 There will also be some analysis of the errors etc. 
 I keep the style of TE but with the cool features of LKIF that I worked on. 
 """
