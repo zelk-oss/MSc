@@ -12,7 +12,7 @@ plt.rcParams.update({
     'xtick.labelsize': 10,
     'ytick.labelsize': 10,
     'legend.fontsize': 12,
-    'figure.figsize': (9, 13),  # A4 size in inches (portrait)
+    'figure.figsize': (6,10),  # A4 size in inches (portrait)
     'legend.loc' : 'upper right'
 })
 
@@ -35,7 +35,7 @@ def plot_csv_data(csv_file):
 
 def plot_four_dual(file_pairs, titles, save_path="/home/chiaraz/thesis/pictures_thesis/final/methods_comparison/batch/"):
     # Create 4 subplots arranged vertically (4 rows) with high resolution (dpi=300)
-    fig, axes = plt.subplots(4, 1, figsize=(9, 13), dpi=300)
+    fig, axes = plt.subplots(4, 1, figsize=(6,10), dpi=300)
     
     for ax, (file_pos, file_neg), title in zip(axes, file_pairs, titles):
         # Process the positive file
@@ -47,13 +47,13 @@ def plot_four_dual(file_pairs, titles, save_path="/home/chiaraz/thesis/pictures_
         color = 'orangered'
         # Plot both sets in blue with identical markers and labels
         ax.errorbar(x_pos, te_pos, yerr=err_pos, fmt='o', capsize=3, elinewidth=1,
-                    color=color, ecolor = mcolors.to_rgba(color, alpha=0.3), markersize=4, label='LKIF')
+                    color=color, ecolor = mcolors.to_rgba(color, alpha=0.3), markersize=2, label='LKIF')
         ax.errorbar(x_neg, te_neg, yerr=err_neg, fmt='o', capsize=3, elinewidth=1,
-                    color=color, ecolor = mcolors.to_rgba(color, alpha=0.3), markersize=4, label='LKIF')
+                    color=color, ecolor = mcolors.to_rgba(color, alpha=0.3), markersize=2, label='LKIF')
         
         # Use a symmetric log scale with adjusted parameters to reduce the gap
         ax.set_xscale('symlog')
-        ax.set_xlabel("lag (months)")
+        ax.set_xlabel("atmosphere lag wrt ocean (months)")
         ax.set_ylabel("LKIF (nats)")
         ax.set_title(title)
         
@@ -63,13 +63,13 @@ def plot_four_dual(file_pairs, titles, save_path="/home/chiaraz/thesis/pictures_
         ax.legend(by_label.values(), by_label.keys())
         
         ax.grid(True, which="both", linestyle="--", linewidth=0.5)
-        ax.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+        #ax.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
         ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
     
     plt.subplots_adjust(hspace=.7)
     
     os.makedirs(save_path, exist_ok=True)
-    save_file = os.path.join(save_path, "LAG.png")
+    save_file = os.path.join(save_path, "lag.png")
     plt.savefig(save_file, dpi=300, bbox_inches='tight')
     #plt.show()
 
@@ -82,10 +82,10 @@ file_pairs = [
 ]
 
 titles = [
-    r"Atmosphere $\to$ Ocean - $d = 1.1e^{-7}$",
-    r"Ocean $\to$ Atmosphere - $d = 1.1e^{-7}$",
-    r"Atmosphere $\to$ Ocean - $d = 1.e^{-8}$",
-    r"Ocean $\to$ Atmosphere - $d = 1.e^{-8}$"
+    r"Atmosphere $\to$ Ocean; strong coupling",
+    r"Ocean $\to$ Atmosphere; strong coupling",
+    r"Atmosphere $\to$ Ocean; weak coupling",
+    r"Ocean $\to$ Atmosphere; weak coupling"
 ]
 
 plot_four_dual(file_pairs, titles)

@@ -13,7 +13,7 @@ plt.rcParams.update({
     'xtick.labelsize': 10,
     'ytick.labelsize': 10,
     'legend.fontsize': 12,
-    'figure.figsize': (9, 13)  # A4 size in inches (portrait)
+    'figure.figsize': (6, 10)  # A4 size in inches (portrait)
 })
 
 def plot_csv_data(csv_file, plot_scale="log"):
@@ -38,15 +38,15 @@ def plot_csv_data(csv_file, plot_scale="log"):
 
 def plot_four(file_list, titles, save_path="/home/chiaraz/thesis/pictures_thesis/final/methods_comparison/batch/"):
     # Create 4 subplots in one column (4 rows) with high resolution (dpi=300)
-    fig, axes = plt.subplots(4, 1, figsize=(9, 13), dpi=300)
+    fig, axes = plt.subplots(4, 1, figsize=(6,10), dpi=300)
     scales = ["log"] * len(file_list)
     color = 'orangered'
     for ax, scale, csv_file, title in zip(axes, scales, file_list, titles):
         x_values, te_values, error_values = plot_csv_data(csv_file, plot_scale=scale)
         ax.errorbar(x_values, te_values, yerr=error_values, fmt='o', capsize=3, elinewidth=1,
-                    color=color, ecolor = mcolors.to_rgba(color, alpha=0.3), markersize=4, label='LKIF')
+                    color=color, ecolor = mcolors.to_rgba(color, alpha=0.3), markersize=3, label='LKIF')
         ax.set_xscale(scale)
-        ax.set_xlabel("running mean window size (months)")
+        ax.set_xlabel("running mean on atmospheric data (months)")
         ax.set_ylabel("LKIF (nats)")
         ax.set_title(title)
         ax.legend()
@@ -59,7 +59,7 @@ def plot_four(file_list, titles, save_path="/home/chiaraz/thesis/pictures_thesis
     plt.subplots_adjust(hspace=0.7)
     
     os.makedirs(save_path, exist_ok=True)
-    save_file = os.path.join(save_path, "lkif_avg.png")
+    save_file = os.path.join(save_path, "avg.png")
     plt.savefig(save_file, dpi=300, bbox_inches='tight')
     #plt.show()
 
@@ -71,10 +71,10 @@ files = [
     "output_LKIF_weak_ocean_atmosphere.csv"
 ]
 titles = [
-    r"Atmosphere $\to$ Ocean - $d = 1.1e^{-7}$",
-    r"Ocean $\to$ Atmosphere - $d = 1.1e^{-7}$",
-    r"Atmosphere $\to$ Ocean - $d = 1.e^{-8}$",
-    r"Ocean $\to$ Atmosphere - $d = 1.e^{-8}$"
+    r"Atmosphere $\to$ Ocean; strong coupling",
+    r"Ocean $\to$ Atmosphere; strong coupling",
+    r"Atmosphere $\to$ Ocean; weak coupling",
+    r"Ocean $\to$ Atmosphere; weak coupling"
 ]
 
 plot_four(files, titles)

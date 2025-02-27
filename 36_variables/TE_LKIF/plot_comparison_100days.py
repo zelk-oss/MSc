@@ -174,11 +174,11 @@ def plot_matrices(matrices, labels, colorbar_labels, title, cmaps, norms, xlabel
     plt.show()
 
 # File names
-file_namesLKIF = {"LKIF": "../averaging/results_averaging_atmosphere/liang_res_11days_0days_weak_avg.csv"}           
-filenameTE = "data_biv_TE/results_weak_0days.csv"
+file_namesLKIF = {"LKIF": "../averaging/results_averaging_atmosphere/liang_res_11days_0days_strong_avg.csv"}           
+filenameTE = "data_biv_TE/results_strong_0days.csv"
 
 # File save path
-save_path = "/home/chiaraz/pictures_thesis/final/methods_comparison/weak_0days_avg.png"
+save_path = "/home/chiaraz/pictures_thesis/final/methods_comparison/strong_0days_avg.png"
 
 
 # Extract tau and r matrices
@@ -216,7 +216,7 @@ plot_matrices(
     matrices=matrices_to_plot,
     labels=["Liang-Kleeman information flow", "transfer entropy", "correlation"],  
     colorbar_labels=colorbar_labels,  
-    title="istantaneous; weak coupling",
+    title="istantaneous; strong coupling",
     cmaps=colormap_dict,
     norms=norm_dict,
     xlabel="Target Variable",

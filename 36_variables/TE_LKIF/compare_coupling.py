@@ -194,21 +194,21 @@ global_max = max(np.max(te_weak), np.max(te_strong))
 rescaled_te_weak = te_weak / global_max
 rescaled_te_strong = te_strong / global_max
 
-# Plot the strong coupling on the left and weak on the right
+# Plot the strong coupling on the left and weak on the right for TE
 te_matrices_to_plot = [rescaled_te_strong, rescaled_te_weak]
 
 plot_matrices(
     matrices=te_matrices_to_plot,
-    labels=[r"$d = 1.1e^{-7}$", r"$d = 1.e^{-8}$"],
+    labels=["strong coupling", "weak coupling"],
     colorbar_labels=["transfer entropy", "transfer entropy"],
-    title="Transfer Entropy comparison: strong and weak coupling",
+    title="transfer entropy",
     cmaps={
-        r"$d = 1.1e^{-7}$": LinearSegmentedColormap.from_list("white_to_blue", ["white", "blue"], N=256),
-        r"$d = 1.e^{-8}$": LinearSegmentedColormap.from_list("white_to_blue", ["white", "blue"], N=256)
+        "strong coupling": LinearSegmentedColormap.from_list("white_to_blue", ["white", "blue"], N=256),
+        "weak coupling": LinearSegmentedColormap.from_list("white_to_blue", ["white", "blue"], N=256)
     },
     norms={
-        r"$d = 1.1e^{-7}$": Normalize(vmin=0, vmax=1),
-        r"$d = 1.e^{-8}$": Normalize(vmin=0, vmax=1)
+        "strong coupling": Normalize(vmin=0, vmax=1),
+        "weak coupling": Normalize(vmin=0, vmax=1)
     },
     xlabel="Target Variable",
     ylabel="Source Variable",
@@ -216,31 +216,126 @@ plot_matrices(
 )
 
 # ------------------------
-# LKIF Comparison Plot (unchanged)
+# LKIF Comparison Plot (Tau)
 # ------------------------
 file_namesLKIF_weak = {"LKIF": "../averaging/results_averaging_atmosphere/liang_res_11days_0days_weak_avg.csv"}
 file_namesLKIF_strong = {"LKIF": "../averaging/results_averaging_atmosphere/liang_res_11days_0days_strong_avg.csv"}
 save_path_LKIF = "/home/chiaraz/thesis/pictures_thesis/final/methods_comparison/LKIF_weak_strong.png"
 
-rescaled_tau_weak, _ = load_LKIF_data(file_namesLKIF_weak)
-rescaled_tau_strong, _ = load_LKIF_data(file_namesLKIF_strong)
+# Load LKIF data (tau and correlation) for weak and strong coupling
+rescaled_tau_weak, r_weak = load_LKIF_data(file_namesLKIF_weak)
+rescaled_tau_strong, r_strong = load_LKIF_data(file_namesLKIF_strong)
+
+
 
 lkif_matrices_to_plot = [rescaled_tau_strong['LKIF'], rescaled_tau_weak['LKIF']]
+# ------------------------
+# LKIF Comparison Plot (Tau)
+# ------------------------
+file_namesLKIF_weak = {"LKIF": "../averaging/results_averaging_atmosphere/liang_res_11days_0days_weak_avg.csv"}
+file_namesLKIF_strong = {"LKIF": "../averaging/results_averaging_atmosphere/liang_res_11days_0days_strong_avg.csv"}
+save_path_LKIF = "/home/chiaraz/thesis/pictures_thesis/final/methods_comparison/LKIF_weak_strong.png"
+
+# Load LKIF data (tau and correlation) for weak and strong coupling
+rescaled_tau_weak, r_weak = load_LKIF_data(file_namesLKIF_weak)
+rescaled_tau_strong, r_strong = load_LKIF_data(file_namesLKIF_strong)
+
+# Prepare LKIF matrices for plotting
+lkif_matrices_to_plot = [rescaled_tau_strong['LKIF'], rescaled_tau_weak['LKIF']]
+
+# Remove diagonal elements by setting them to 0
+for mat in lkif_matrices_to_plot:
+    np.fill_diagonal(mat, 0)
 
 plot_matrices(
     matrices=lkif_matrices_to_plot,
-    labels=[r"$d = 1.1e^{-7}$", r"$d = 1.e^{-8}$"],
+    labels=["strong coupling", "weak coupling"],
     colorbar_labels=["LKIF", "LKIF"],
-    title="Liang-Kleeman Information Flow comparison: strong and weak coupling",
+    title="Liang-Kleeman information flow",
     cmaps={
-        r"$d = 1.1e^{-7}$": LinearSegmentedColormap.from_list("white_to_orangered", ["white", "orangered"], N=256),
-        r"$d = 1.e^{-8}$": LinearSegmentedColormap.from_list("white_to_orangered", ["white", "orangered"], N=256)
+        "strong coupling": LinearSegmentedColormap.from_list("white_to_orangered", ["white", "orangered"], N=256),
+        "weak coupling": LinearSegmentedColormap.from_list("white_to_orangered", ["white", "orangered"], N=256)
     },
     norms={
-        r"$d = 1.1e^{-7}$": Normalize(vmin=0, vmax=1),
-        r"$d = 1.e^{-8}$": Normalize(vmin=0, vmax=1)
+        "strong coupling": Normalize(vmin=0, vmax=1),
+        "weak coupling": Normalize(vmin=0, vmax=1)
     },
     xlabel="Target Variable",
     ylabel="Source Variable",
     save_path=save_path_LKIF
+)
+
+# ------------------------
+# Correlation Comparison Plot (from LKIF data)
+# ------------------------
+# Compute global maximum across both correlation matrices for common normalization
+global_max_corr = max(np.max(r_strong["LKIF"]), np.max(r_weak["LKIF"]))
+r_strong_norm = r_strong["LKIF"] / global_max_corr
+r_weak_norm = r_weak["LKIF"] / global_max_corr
+
+
+save_path_corr = "/home/chiaraz/pictures_thesis/final/methods_comparison/correlation_weak_strong.png"
+plot_matrices(
+    matrices=correlation_matrices_to_plot,
+    labels=["strong coupling", "weak coupling"],
+    colorbar_labels=["correlation", "correlation"],
+    title="correlation",
+    cmaps={
+        "strong coupling": LinearSegmentedColormap.from_list("white_to_black", ["white", "black"], N=256),
+        "weak coupling": LinearSegmentedColormap.from_list("white_to_black", ["white", "black"], N=256)
+    },
+    norms={
+        "strong coupling": Normalize(vmin=0, vmax=1),
+        "weak coupling": Normalize(vmin=0, vmax=1)
+    },
+    xlabel="Target Variable",
+    ylabel="Source Variable",
+    save_path=save_path_corr
+)
+
+plot_matrices(
+    matrices=lkif_matrices_to_plot,
+    labels=["strong coupling", "weak coupling"],
+    colorbar_labels=["LKIF", "LKIF"],
+    title="Liang-Kleeman information flow",
+    cmaps={
+        "strong coupling": LinearSegmentedColormap.from_list("white_to_orangered", ["white", "orangered"], N=256),
+        "weak coupling": LinearSegmentedColormap.from_list("white_to_orangered", ["white", "orangered"], N=256)
+    },
+    norms={
+        "strong coupling": Normalize(vmin=0, vmax=1),
+        "weak coupling": Normalize(vmin=0, vmax=1)
+    },
+    xlabel="Target Variable",
+    ylabel="Source Variable",
+    save_path=save_path_LKIF
+)
+
+# ------------------------
+# Correlation Comparison Plot (from LKIF data)
+# ------------------------
+# Compute global maximum across both correlation matrices for common normalization
+global_max_corr = max(np.max(r_strong["LKIF"]), np.max(r_weak["LKIF"]))
+r_strong_norm = r_strong["LKIF"] / global_max_corr
+r_weak_norm = r_weak["LKIF"] / global_max_corr
+
+correlation_matrices_to_plot = [r_strong_norm, r_weak_norm]
+save_path_corr = "/home/chiaraz/pictures_thesis/final/methods_comparison/correlation_weak_strong.png"
+
+plot_matrices(
+    matrices=correlation_matrices_to_plot,
+    labels=["strong coupling", "weak coupling"],
+    colorbar_labels=["correlation", "correlation"],
+    title="correlation",
+    cmaps={
+        "strong coupling": LinearSegmentedColormap.from_list("white_to_black", ["white", "black"], N=256),
+        "weak coupling": LinearSegmentedColormap.from_list("white_to_black", ["white", "black"], N=256)
+    },
+    norms={
+        "strong coupling": Normalize(vmin=0, vmax=1),
+        "weak coupling": Normalize(vmin=0, vmax=1)
+    },
+    xlabel="Target Variable",
+    ylabel="Source Variable",
+    save_path=save_path_corr
 )
