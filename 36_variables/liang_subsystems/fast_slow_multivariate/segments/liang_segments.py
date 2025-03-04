@@ -93,7 +93,8 @@ def main():
         print("  Significance TAB:", res["significance_TAB (bool, Z, p-value)"])
         print("  Significance TBA:", res["significance_TBA (bool, Z, p-value)"])
         print("-----")
-        
+
+
     print("\nProcessing SLOW files:")
     for fname in slow_files:
         print(f"Processing {fname} ...")
@@ -110,6 +111,7 @@ def main():
         print("  Significance TAB:", res["significance_TAB (bool, Z, p-value)"])
         print("  Significance TBA:", res["significance_TBA (bool, Z, p-value)"])
         print("-----")
+
     
     elapsed = time.time() - start_time
     print("\nTotal processing time: {:.2f} seconds".format(elapsed))
@@ -138,5 +140,9 @@ def main():
         print("Slow Error TAB: mean = {:.4f}, std = {:.4f}".format(slow_error_TAB_mean, slow_error_TAB_std))
         print("Slow Error TBA: mean = {:.4f}, std = {:.4f}".format(slow_error_TBA_mean, slow_error_TBA_std))
 
+
+    print("fast results", fast_results)
+
+    print("slow results ",slow_results)
 if __name__ == "__main__":
     main()

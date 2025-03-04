@@ -17,14 +17,26 @@ def analyze_sinusoidal(file_path):
     # First column as time
     time_points = data[:, 0]
     # change visualisation to days 
-    max_time = time_points[len(time_points)-1]*0.11 / (365.24/12)
+    max_time = time_points[len(time_points)-1]*0.11 / 365.24 # in years 
     time = np.linspace(0, max_time, len(time_points))
     total_time = time[-1] - time[0]
     data_interval = np.mean(np.diff(time))  # Determine time interval from time column
     print("data interval", data_interval)
+
+    import matplotlib as mpl
+
+    # Update rcParams to increase font sizes
+    mpl.rcParams.update({
+        'font.size': 26,         # Default text size
+        'axes.titlesize': 24,    # Title size for axes
+        'axes.labelsize': 22,    # Axis label size
+        'legend.fontsize': 24,   # Legend text size
+        'xtick.labelsize': 22,   # X-tick label size
+        'ytick.labelsize': 22    # Y-tick label size
+    })
     
     # Loop through all columns
-    for column_index in range(0,2):
+    for column_index in range(1,2):
     #range(20, data.shape[1]):
         # Extract the time series
         time_series = data[:, column_index]
@@ -54,13 +66,13 @@ def analyze_sinusoidal(file_path):
         # Plot the sinusoidal function
         sparse_time_series = time_series[0::1]
         sparse_time = time[0::1]
-        plt.figure(figsize=(10, 6))
-        plt.plot(time, time_series, label=r'$\delta T_{a,1}$ Time Series', linestyle='-', color='seagreen')
-        plt.scatter(sparse_time, sparse_time_series, color='red', label='Data Points', s=4, zorder=5)
+        plt.figure(figsize=(15, 9))
+        plt.plot(time, time_series, label=r'$\psi_{a,1}$', linestyle='-', color='darkblue')
+        #plt.scatter(sparse_time, sparse_time_series, color='red', label='Data Points', s=4, zorder=5)
         #plt.axhline(mean_value, color='black', linestyle='--', linewidth=0.8, label='Mean Value')
-        plt.title(r'$\delta T_{a,1}$ Time Series')
-        plt.xlabel('Time (months)')
-        plt.ylabel(r'$\delta T_{a,1}$')
+        plt.title(r'$\psi_{a,1}$ time series')
+        plt.xlabel('time (years)')
+        plt.ylabel(r'$\psi_{a,1}$')
         plt.legend()
         plt.grid()
         plt.show()

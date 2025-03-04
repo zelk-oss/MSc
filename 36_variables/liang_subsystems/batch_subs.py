@@ -23,7 +23,7 @@ output_folder = "batch_log_lag/"
 vector_days = np.logspace(1.0, 4.2, 100) # 200 values logarithmically spaced from 1e1 to 1e4.2 = 40 years 
 
 # Open the CSV file for writing all results
-output_file = output_folder + "log_results_weak.csv"
+output_file = output_folder + "log_results_weak_BIGERROR.csv"
 
 # Prepare the header for the CSV file (first row)
 header = ["File", "TAB", "TBA", "Error TAB", "Error TBA", "Significant TAB", "Significant TBA"]
@@ -71,7 +71,7 @@ for i in range(0,101):
     s = 36
 
     # Call the function to compute results
-    results = information_flow_subspace(time_series, r-1, s-1, np_val=1, n_iter=100, alpha=0.05)
+    results = information_flow_subspace(time_series, r-1, s-1, np_val=1, n_iter=50, alpha=0.05)
 
     # Write the results to the combined CSV file
     with open(output_file, 'a', newline='') as csvfile:

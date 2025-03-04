@@ -202,28 +202,45 @@ def plot_attractors_side_by_side(weak_data, strong_data, x_idx=22, y_idx=30, z_i
       z_idx (int): Column index for the z-axis variable.
     """
     import matplotlib.pyplot as plt
+    import matplotlib as mpl
+
+    # Update rcParams to increase font sizes
+    mpl.rcParams.update({
+        'font.size': 26,         # Default text size
+        'axes.titlesize': 24,    # Title size for axes
+        'axes.labelsize': 24,    # Axis label size
+        'legend.fontsize': 26,   # Legend text size
+        'xtick.labelsize': 22,   # X-tick label size
+        'ytick.labelsize': 22    # Y-tick label size
+    })
     
     fig = plt.figure(figsize=(26, 12))
     
-    # Left subplot for strong coupling attractor
+    # Left subplot for weak coupling attractor
     ax2 = fig.add_subplot(121, projection='3d')
     ax2.scatter(weak_data[:, x_idx], weak_data[:, y_idx], weak_data[:, z_idx],
                 s=0.1, color='darkblue', label=r"attractor for $d = 1e^{-8}$")
-    ax2.set_title("weak coupling")
-    ax2.set_xlabel(r"$\Psi_{o,2}$")
-    ax2.set_ylabel(r"$\delta T_{o,2}$")
-    ax2.set_zlabel(r"$\Psi_{a,1}$")
-    ax2.legend(loc="best", markerscale=10)  # Increase legend marker size
+    ax2.set_title("weak coupling", fontsize = 30)
+    ax2.set_xlabel(r"$\Psi_{o,2}$", labelpad=35)
+    ax2.set_ylabel(r"$\delta T_{o,2}$", labelpad=35)
+    ax2.set_zlabel(r"$\Psi_{a,1}$", labelpad=35)
+    ax2.legend(loc="best", markerscale=14)  # Increase legend marker size
+    ax2.tick_params(axis='x', pad=14)
+    ax2.tick_params(axis='y', pad=14)
+    ax2.tick_params(axis='z', pad=14)
     
-    # Right subplot for weak coupling attractor
+    # Right subplot for strong coupling attractor
     ax1 = fig.add_subplot(122, projection='3d')
     ax1.scatter(strong_data[:, x_idx], strong_data[:, y_idx], strong_data[:, z_idx],
                 s=0.1, color='darkblue', label=r"attractor for $d = 1.1e^{-7}$")
-    ax1.set_title("strong coupling")
-    ax1.set_xlabel(r"$\Psi_{o,2}$")
-    ax1.set_ylabel(r"$\delta T_{o,2}$")
-    ax1.set_zlabel(r"$\Psi_{a,1}$")
-    ax1.legend(loc="best", markerscale=10)  # Increase legend marker size
+    ax1.set_title("strong coupling", fontsize = 30)
+    ax1.set_xlabel(r"$\Psi_{o,2}$", labelpad=35)
+    ax1.set_ylabel(r"$\delta T_{o,2}$", labelpad=35)
+    ax1.set_zlabel(r"$\Psi_{a,1}$", labelpad=35)
+    ax1.legend(loc="best", markerscale=14)  # Increase legend marker size
+    ax1.tick_params(axis='x', pad=14)
+    ax1.tick_params(axis='y', pad=14)
+    ax1.tick_params(axis='z', pad=14)
     
     plt.tight_layout()
     plt.show()

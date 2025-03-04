@@ -19,7 +19,7 @@ def compute_and_save_liang_results(time_series, variables, output_filename):
     variables : subset of variables in the time series to consider 
     output_filename : the name of the file where results are stored    
     """
-    nvar_results = np.array(compute_liang_nvar(time_series, 1, 1000)) # 1000 bootstrap iterations 
+    nvar_results = np.array(compute_liang_nvar(time_series, 1, 100)) # 1000 bootstrap iterations 
 
     num_vars = len(variables)
     csv_headers = [
@@ -47,6 +47,34 @@ def compute_and_save_liang_results(time_series, variables, output_filename):
         writer.writerows(csv_rows)
 
     print(f"Results saved to {output_filename}")
+
+
+# save to file a chunk of this file for the TE analysis 
+def keep_middle_window(input_array, output_file):
+    # Ensure the output folder exists
+  
+    # Get total points (number of columns)
+    total_points = input_array.shape[1]
+    print(f"Total points: {total_points}")
+
+    # Parameters
+    window_size = 10000  # Number of points to keep
+    middle_index = total_points // 2
+    half_window = window_size // 2
+
+    # Select the range around the middle index
+    start_index = max(0, middle_index - half_window)
+    end_index = min(total_points, middle_index + half_window)
+    selected_lines = input_array[:, start_index:end_index]
+
+    # Write the selected lines to the output file
+    with open(output_file, 'w') as file:
+        for row in selected_lines:
+            # Convert each row to a tab-separated string and write it to the file
+            file.write('\t'.join(map(str, row)) + '\n')
+
+    print(f"Successfully kept a window of {window_size} points around the middle. Output saved to {output_file}.")
+
 
 # Main execution
 if __name__ == "__main__":
@@ -81,7 +109,7 @@ if __name__ == "__main__":
     select_time_series = time_series[select_vars, :] # ignore time column 
 
     # Define lags in days
-    lags = [365.25/2, 365.25, 365.25*10]  # Lags in days
+    lags = [100, 3000]  # Lags in days
 
     # Process each lag and save results
     results_folder = "liang_lagging_results"
@@ -89,8 +117,9 @@ if __name__ == "__main__":
 
     for i, days in enumerate(lags):
         lagged_data = introduce_lag_fourier(select_time_series, days, True)
+        keep_middle_window(lagged_data, f"window_lag_strong_{lags[i]}days")
         print("shape of lagged data", np.shape(lagged_data))
-        #output_filename = os.path.join(results_folder, f"results_data11days_STRONG_lag_{lags[i]}days.csv")
+        #output_filename = os.path.join(results_folder, f"results_data11days_WEAK_lag_{lags[i]}days.csv")
         #compute_and_save_liang_results(lagged_data, select_vars, output_filename)
 
     print("Execution time =", time.time() - start)
