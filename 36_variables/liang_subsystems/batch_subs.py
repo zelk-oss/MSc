@@ -23,7 +23,7 @@ output_folder = "batch_log_lag/"
 vector_days = np.logspace(1.0, 4.2, 100) # 200 values logarithmically spaced from 1e1 to 1e4.2 = 40 years 
 
 # Open the CSV file for writing all results
-output_file = output_folder + "log_results_weak_BIGERROR.csv"
+output_file = output_folder + "log_results_strong_BIGERROR.csv"
 
 # Prepare the header for the CSV file (first row)
 header = ["File", "TAB", "TBA", "Error TAB", "Error TBA", "Significant TAB", "Significant TBA"]
@@ -37,7 +37,7 @@ with open(output_file, 'w', newline='') as csvfile:
 #for i in range(1, 101): this is the option for linspace data from 20 days average to 1000 days average 
     # Define the file name dynamically
 for i in range(0,101):
-    file_name = f'{i}w'
+    file_name = f'{i}s'
     file = file_path + file_name
     data_in_file = []
 

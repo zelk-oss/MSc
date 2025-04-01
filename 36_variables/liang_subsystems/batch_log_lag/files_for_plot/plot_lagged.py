@@ -75,12 +75,12 @@ def plot_four_dual(file_pairs, titles, save_path="/home/chiaraz/thesis/pictures_
         ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
         
         # Add red vertical dashed lines for 100 days and 1000 days
-        ax.axvline(x=x_100, color='red', linestyle='--', linewidth=1)
-        ax.axvline(x=x_1000, color='red', linestyle='--', linewidth=1)
+        #ax.axvline(x=x_100, color='red', linestyle='--', linewidth=1)
+        #ax.axvline(x=x_1000, color='red', linestyle='--', linewidth=1)
         ylim = ax.get_ylim()
         # Position the labels inside the plot at 93% and 88% of the y-limit
-        ax.text(x_100, ylim[1]*0.93, "100 days", color='red', fontsize=8, ha='center', va='top')
-        ax.text(x_1000, ylim[1]*0.80, "1000 days", color='red', fontsize=8, ha='center', va='top')
+        #ax.text(x_100, ylim[1]*0.93, "100 days", color='red', fontsize=8, ha='center', va='top')
+        #ax.text(x_1000, ylim[1]*0.80, "1000 days", color='red', fontsize=8, ha='center', va='top')
     
     # Add row titles for coupling types using fig.text in normalized figure coordinates
     fig.text(0.5, 0.92, "Strong Coupling", ha="center", va="top", fontsize=12)
