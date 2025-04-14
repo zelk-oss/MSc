@@ -19,6 +19,49 @@ sys.path.insert(0, '/home/chiaraz/thesis')
 from functions_for_maooam import average_time_series
 from functions_for_maooam import introduce_lag_fourier
 
+# checking if lag functions as expected 
+import matplotlib.pyplot as plt
+
+def plot_lag_examples(i, vector_days_i, original, lagged, nlagged, var_a=1, var_o=21):
+    total_points = original.shape[1]
+    zoom_window = total_points // 10
+    start_index = total_points // 2 - zoom_window // 2
+    end_index = start_index + zoom_window
+    t = np.arange(zoom_window)
+
+    # 1. Plot originale (nessun lag)
+    plt.figure(figsize=(10, 4))
+    plt.plot(t, original[var_a, start_index:end_index], label='Atmosfera (originale)', color='blue')
+    plt.plot(t, original[var_o, start_index:end_index], label='Oceano (originale)', color='red')
+    plt.title(f'[i={i}] Nessun lag (originale)')
+    plt.xlabel('Time steps (zoomed)')
+    plt.ylabel('Valore')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+    # 2. Plot con lag positivo
+    plt.figure(figsize=(10, 4))
+    plt.plot(t, lagged[var_a, start_index:end_index], label='Atmosfera (lag +)', linestyle='--', color='blue')
+    plt.plot(t, lagged[var_o, start_index:end_index], label='Oceano (lag +)', linestyle='--', color='red')
+    plt.title(f'[i={i}] Lag positivo: +{vector_days_i:.1f} giorni')
+    plt.xlabel('Time steps (zoomed)')
+    plt.ylabel('Valore')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+    # 3. Plot con lag negativo
+    plt.figure(figsize=(10, 4))
+    plt.plot(t, nlagged[var_a, start_index:end_index], label='Atmosfera (lag -)', linestyle=':', color='blue')
+    plt.plot(t, nlagged[var_o, start_index:end_index], label='Oceano (lag -)', linestyle=':', color='red')
+    plt.title(f'[i={i}] Lag negativo: -{vector_days_i:.1f} giorni')
+    plt.xlabel('Time steps (zoomed)')
+    plt.ylabel('Valore')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
 """
 questo per il batch non ci serve 
 # Function to compute Liang's metrics and save results to CSV
@@ -116,6 +159,8 @@ if __name__ == "__main__":
     results_folder = "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/batch_log_lag/"
     os.makedirs(results_folder, exist_ok=True)
 
+    plot_indices = np.linspace(0, 100, 5, dtype=int)
+
     # first number has to be higher than 2 
     for i in range(0,101):
         print(i)
@@ -123,7 +168,7 @@ if __name__ == "__main__":
             lagged_data = introduce_lag_fourier(select_time_series, vector_days[i], False)
             nlagged_data = introduce_lag_fourier(select_time_series, vector_days[i], False)
         else: 
-            lagged_data = introduce_lag_fourier(select_time_series, vector_days[i], True)
+            lagged_data = introduce_lag_fourier(select_time_series, vector_days[i]*(1), True)
             # also negative lagged data, atmosphere falling behind 
             nlagged_data = introduce_lag_fourier(select_time_series, vector_days[i]* (-1), True)
         
@@ -136,6 +181,11 @@ if __name__ == "__main__":
         window_nlagged_data = keep_middle_window(nlagged_data)
         print("shape of kept window: ",np.shape(window_nlagged_data))
 
+        # check lags visually 
+        if i in plot_indices:
+            plot_lag_examples(i, vector_days[i], select_time_series, window_lagged_data, window_nlagged_data)
+
+        """
         output_filename = os.path.join(results_folder, f"{i}w")
         # negative lag filename 
         noutput_filename = os.path.join(results_folder, f"neg{i}w")
@@ -153,5 +203,5 @@ if __name__ == "__main__":
                 # Convert each row to a tab-separated string and write it to the file
                 file.write('\t'.join(map(str, row)) + '\n')
         print(f"Successfully kept a window of {window_nlagged_data.shape[1]} points around the middle. Output saved to {noutput_filename}.")
-
+        """
     print("Execution time = ", time.time() - start)

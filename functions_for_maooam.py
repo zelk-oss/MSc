@@ -141,13 +141,18 @@ def introduce_lag_fourier(data, days_of_delay, apply_delay):
     n_atmospheric = 20  # First 20 variables are atmospheric
     n_oceanic = 16      # Last 16 variables are oceanic
 
+    # check the shape of data 
+    if data.shape[0] > data.shape[1]: 
+        print("ERROR: data in format time * n_variables")
     atmosphere = data[:n_atmospheric, :]
     ocean = data[n_atmospheric:, :]
 
     if lag_points > 0:
         # Ocean lags behind atmosphere
         trimmed_atmosphere = atmosphere[:, :-lag_points]
-        trimmed_ocean = ocean[:, lag_points:]
+        trimmed_ocean = ocean[:, lag_points:]  # in questo modo ottengo due time series della stessa
+        # lunghezza ma con atmo che parte uguale a se stessa ma in corrispondenza di un oceano un po' più 
+        # avanti, quindi è come se fosse in ritardo rispetto all'oceano 
     else:
         # Atmosphere lags behind ocean
         lag_points = abs(lag_points)

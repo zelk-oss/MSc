@@ -4,7 +4,7 @@ from scipy.integrate import odeint
 import numpy as np 
 import matplotlib.pyplot as plt 
 
-def integrate(mu):
+def simulate_and_save(mu):
     def odes(z,t): 
         # constants 
         m_o = 10000 # ocean mass 
@@ -32,13 +32,14 @@ def integrate(mu):
 
     
     # initial conditions 
-    z0 = [0,0.2,0,1]
+    z0 = [0,1,0,10]
 
     # test defined ODEs
-    #print(odes(z = z0, t = 0))
+    print(odes(z = z0, t = 0))
 
     # declare a time vector 
-    t = np.linspace(0,10000,10000) 
+    # high sampling to prevent aliasing 
+    t = np.linspace(0,1000,100000) 
     z = odeint(odes, z0,t)
 
     x = z[:,0] # oceano 
@@ -48,22 +49,28 @@ def integrate(mu):
 
 
     #plot 
-    plt.plot(t,x, label = "ocean")
-    plt.show()
-    plt.plot(t,y, label = "atmosphere")
+    plt.plot(t[0:10000],x[0:10000], label = "ocean")
+    plt.plot(t[0:10000],y[0:10000], label = "atmosphere")
     plt.legend()
 
-    plt.show()
+    #plt.show()
 
-    plt.scatter(x,xdot, s = 0.1, label = "ocean phase space")
+    plt.scatter(x,xdot, s = 0.2, label = "ocean phase space")
     
-    plt.scatter(y,ydot, s = 0.1, label = "atmosphere phase space")
+    plt.scatter(y,ydot, s = 0.2, label = "atmosphere phase space")
     plt.legend()
 
-    plt.show()
+    #plt.show()
+
+    # save time series 
+    with open(f'data_mu{mu}.txt', 'w') as file: 
+        file.write("time ocean atmosphere\n")  # optional: add header
+        for i in range(len(t)):
+            file.write(f"{t[i]} {x[i]} {y[i]}\n")
 
 
-integrate(0)
-integrate(0.5)
-integrate(10)
-integrate(100)
+
+simulate_and_save(0)
+simulate_and_save(1)
+simulate_and_save(10)
+simulate_and_save(100)
