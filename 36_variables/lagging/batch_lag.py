@@ -22,45 +22,24 @@ from functions_for_maooam import introduce_lag_fourier
 # checking if lag functions as expected 
 import matplotlib.pyplot as plt
 
-def plot_lag_examples(i, vector_days_i, original, lagged, nlagged, var_a=1, var_o=21):
+def plot_lag_check(i, vector_days_i, original, lagged, nlagged, var_indices=[1, 21]):
     total_points = original.shape[1]
-    zoom_window = total_points // 10
-    start_index = total_points // 2 - zoom_window // 2
-    end_index = start_index + zoom_window
-    t = np.arange(zoom_window)
+    t = np.arange(total_points)
+    t_lagged = np.arange(lagged.shape[1])
+    t_nlagged = np.arange(nlagged.shape[1])
 
-    # 1. Plot originale (nessun lag)
-    plt.figure(figsize=(10, 4))
-    plt.plot(t, original[var_a, start_index:end_index], label='Atmosfera (originale)', color='blue')
-    plt.plot(t, original[var_o, start_index:end_index], label='Oceano (originale)', color='red')
-    plt.title(f'[i={i}] Nessun lag (originale)')
-    plt.xlabel('Time steps (zoomed)')
-    plt.ylabel('Valore')
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
-
-    # 2. Plot con lag positivo
-    plt.figure(figsize=(10, 4))
-    plt.plot(t, lagged[var_a, start_index:end_index], label='Atmosfera (lag +)', linestyle='--', color='blue')
-    plt.plot(t, lagged[var_o, start_index:end_index], label='Oceano (lag +)', linestyle='--', color='red')
-    plt.title(f'[i={i}] Lag positivo: +{vector_days_i:.1f} giorni')
-    plt.xlabel('Time steps (zoomed)')
-    plt.ylabel('Valore')
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
-
-    # 3. Plot con lag negativo
-    plt.figure(figsize=(10, 4))
-    plt.plot(t, nlagged[var_a, start_index:end_index], label='Atmosfera (lag -)', linestyle=':', color='blue')
-    plt.plot(t, nlagged[var_o, start_index:end_index], label='Oceano (lag -)', linestyle=':', color='red')
-    plt.title(f'[i={i}] Lag negativo: -{vector_days_i:.1f} giorni')
-    plt.xlabel('Time steps (zoomed)')
-    plt.ylabel('Valore')
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
+    print(f"\n--- Plotting lag check for i={i} (lag = {vector_days_i:.2f} days) ---")
+    for idx in var_indices:
+        plt.figure(figsize=(10, 4))
+        plt.plot(t, original[idx, :], label='Original', color='green')
+        plt.plot(t_lagged, lagged[idx, :], label=f'Lag +{vector_days_i:.1f}d', linestyle='--', color='blue')
+        plt.plot(t_nlagged, nlagged[idx, :], label=f'Lag -{vector_days_i:.1f}d', linestyle=':', color='red')
+        plt.title(f'Zoomed Time Series (Var {idx+1})')
+        plt.xlabel('Time steps')
+        plt.ylabel('Value')
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
 
 """
 questo per il batch non ci serve 
@@ -150,7 +129,10 @@ if __name__ == "__main__":
     # select variables 
     select_vars = list(range(1,37))  # select columns from the second to the end 
     select_time_series = time_series[select_vars, :] # ignore time column 
-    print("shape of selected time series", np.shape(select_time_series))
+    print("shape of selected time series: ", np.shape(select_time_series))
+
+    select_time_series = keep_middle_window(select_time_series)
+    print("shape of kept window: ", np.shape(select_time_series))
 
     # Vcetor of lags in days
     vector_days = np.logspace(1.0, 4.2, 101, True) # 100 points logarithmically spaced from 
@@ -158,6 +140,7 @@ if __name__ == "__main__":
     # Process each lag and save results
     results_folder = "/home/chiaraz/data_thesis/data_1e5points_1000ws/window_for_TE/batch_log_lag/"
     os.makedirs(results_folder, exist_ok=True)
+
 
     plot_indices = np.linspace(0, 100, 5, dtype=int)
 
@@ -176,14 +159,9 @@ if __name__ == "__main__":
         print("shape lagged_data", np.shape(lagged_data))
         print("shape n_lagged_data", np.shape(nlagged_data))
 
-        window_lagged_data = keep_middle_window(lagged_data)
-        print(f"shape of kept window: {np.shape(window_lagged_data)}")
-        window_nlagged_data = keep_middle_window(nlagged_data)
-        print("shape of kept window: ",np.shape(window_nlagged_data))
-
         # check lags visually 
         if i in plot_indices:
-            plot_lag_examples(i, vector_days[i], select_time_series, window_lagged_data, window_nlagged_data)
+            plot_lag_check(i, vector_days[i], select_time_series, lagged_data, nlagged_data)
 
         """
         output_filename = os.path.join(results_folder, f"{i}w")
@@ -192,14 +170,14 @@ if __name__ == "__main__":
 
         # Write the selected lines to the output file
         with open(output_filename, 'w') as file:
-            for row in window_lagged_data:
+            for row in lagged_data:
                 # Convert each row to a tab-separated string and write it to the file
                 file.write('\t'.join(map(str, row)) + '\n')
-        print(f"Successfully kept a window of {window_lagged_data.shape[1]} points around the middle. Output saved to {output_filename}.")
+        print(f"Successfully kept a window of {lagged_data.shape[1]} points around the middle. Output saved to {output_filename}.")
 
         # also for negative lag 
         with open(noutput_filename, 'w') as file:
-            for row in window_nlagged_data:
+            for row in nlagged_data:
                 # Convert each row to a tab-separated string and write it to the file
                 file.write('\t'.join(map(str, row)) + '\n')
         print(f"Successfully kept a window of {window_nlagged_data.shape[1]} points around the middle. Output saved to {noutput_filename}.")

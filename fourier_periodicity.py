@@ -1,115 +1,258 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 
-# Function to analyze sinusoidal time series and frequency over time windows
-def analyze_sinusoidal(file_path):
+# Configure plot styles
+mpl.rcParams.update({
+    'font.size': 26,
+    'axes.titlesize': 24,
+    'axes.labelsize': 22,
+    'legend.fontsize': 14,
+    'xtick.labelsize': 22,
+    'ytick.labelsize': 22
+})
+
+# Function to plot a single component
+def plot_single(file_path, which_component, zoom=1, stride=1):
     """
-    Analyze and plot sinusoidal time series for all columns in a data file, 
-    and plot frequency as a function of increasing time window.
-    
+    Plot a single component with zoom and stride options.
+
     Parameters:
         file_path (str): Path to the data file.
+        which_component (int): Index of the component to plot.
+        zoom (int): Fraction of the time series to visualize (e.g., 10 = 1/10).
+        stride (int): Show every N-th data point (e.g., 10 = every 10th point).
     """
-    # Load the data file
     data = np.loadtxt(file_path)
-    print(f"Data shape: {data.shape}")
-    
-    # First column as time
+    print(f"Loaded file '{file_path}', shape: {data.shape}")
+
     time_points = data[:, 0]
-    # change visualisation to days 
-    max_time = time_points[len(time_points)-1]*0.11 / 365.24 # in years 
+    max_time = time_points[-1] * 0.11 / 365.24  # convert to years
     time = np.linspace(0, max_time, len(time_points))
-    total_time = time[-1] - time[0]
-    data_interval = np.mean(np.diff(time))  # Determine time interval from time column
-    print("data interval", data_interval)
+    component = data[:, which_component]
 
-    import matplotlib as mpl
+    # Apply zoom and stride
+    limit = len(time) // zoom
+    time = time[:limit:stride]
+    component = component[:limit:stride]
 
-    # Update rcParams to increase font sizes
-    mpl.rcParams.update({
-        'font.size': 26,         # Default text size
-        'axes.titlesize': 24,    # Title size for axes
-        'axes.labelsize': 22,    # Axis label size
-        'legend.fontsize': 24,   # Legend text size
-        'xtick.labelsize': 22,   # X-tick label size
-        'ytick.labelsize': 22    # Y-tick label size
-    })
-    
-    # Loop through all columns
-    for column_index in range(1,2):
-    #range(20, data.shape[1]):
-        # Extract the time series
-        time_series = data[:, column_index]
-        
-        # Calculate the mean of the series for oscillation reference
-        mean_value = np.mean(time_series)
-        
-        # Find crossings around the mean
-        zero_crossings = np.where(np.diff(np.sign(time_series - mean_value)))[0]
-        
-        # Calculate periods (time between crossings)
-        crossing_times = time[zero_crossings]
-        half_periods = np.diff(crossing_times)
-        periods = half_periods[::2] * 2  # Full periods, assuming symmetry
-        
-        # Calculate overall frequencies
-        average_period = np.mean(periods) if len(periods) > 0 else np.inf
-        frequency_per_day = 1 / average_period if average_period < np.inf else 0
-        frequency_per_year = frequency_per_day * 365.25
-        
-        # Print overall frequencies
-        print(f"Column {column_index}:")
-        print(f"  Mean value: {mean_value:.6f}")
-        print(f"  Frequency: {frequency_per_day:.6f} cycles per day")
-        print(f"  Frequency: {frequency_per_year:.6f} cycles per year")
-        
-        # Plot the sinusoidal function
-        sparse_time_series = time_series[0::1]
-        sparse_time = time[0::1]
-        plt.figure(figsize=(15, 9))
-        plt.plot(time, time_series, label=r'$\psi_{a,1}$', linestyle='-', color='darkblue')
-        #plt.scatter(sparse_time, sparse_time_series, color='red', label='Data Points', s=4, zorder=5)
-        #plt.axhline(mean_value, color='black', linestyle='--', linewidth=0.8, label='Mean Value')
-        plt.title(r'$\psi_{a,1}$ time series')
-        plt.xlabel('time (years)')
-        plt.ylabel(r'$\psi_{a,1}$')
-        plt.legend()
-        plt.grid()
-        plt.show()
-        """
-        # Frequency as a function of time window
-        frequencies = []
-        windows = np.linspace(0, total_time, 100)  # Create 100 time windows
-        for t_max in windows:
-            indices = time <= t_max
-            window_times = time[indices]
-            window_series = time_series[indices]
-            
-            # Calculate zero-crossings and periods within the window
-            window_mean = np.mean(window_series)
-            window_zero_crossings = np.where(np.diff(np.sign(window_series - window_mean)))[0]
-            window_crossing_times = window_times[window_zero_crossings]
-            window_half_periods = np.diff(window_crossing_times)
-            window_periods = window_half_periods[::2] * 2
-            
-            # Calculate frequency for the current window
-            if len(window_periods) > 0:
-                avg_period = np.mean(window_periods)
-                frequencies.append(1 / avg_period if avg_period > 0 else 0)
-            else:
-                frequencies.append(0)
-        
-        # Plot frequency as a function of time window
-        plt.figure(figsize=(10, 6))
-        plt.plot(windows, frequencies, label=f'Frequency Evolution (Column {column_index})', color='green')
-        plt.title(f'Frequency as a Function of Time Window (Column {column_index})')
-        plt.xlabel('Time Window (days)')
-        plt.ylabel('Frequency (cycles per day)')
-        plt.legend()
-        plt.grid()
-        #plt.show()
-        """
+    plt.figure(figsize=(15, 9))
+    plt.plot(time, component, label=f"component {which_component}", color='darkblue', marker ="o", markersize=2)
+    plt.title(f"component {which_component}")
+    plt.xlabel("time (years)")
+    plt.ylabel(f"component {which_component}")
+    plt.legend()
+    plt.grid()
+    plt.show()
 
-# Example usage
-file_path = "../data_thesis/data_1e5points_1000ws/evol_fields_1_1e-7.dat"  # Replace with your file path
-analyze_sinusoidal(file_path)
+# Function to superimpose two components from different files
+def plot_superimposed(series_list, zoom=1, stride=1):
+    """
+    Superimpose an arbitrary number of components from one or more files and save the plot.
+
+    Parameters:
+        series_list (list of tuples): Each tuple is (file_path, component_index).
+        zoom (int): Fraction of time series to visualize.
+        stride (int): Show every N-th data point.
+    """
+    plt.figure(figsize=(15, 9))
+
+    filenames = []
+
+    for i, (file_path, comp_idx) in enumerate(series_list):
+        data = np.loadtxt(file_path)
+        time_pts = data[:, 0]
+        time = np.linspace(0, time_pts[-1] * 0.11 / 365.24, len(time_pts))
+        component = data[:, comp_idx]
+
+        # Apply zoom and stride
+        limit = len(time) // zoom
+        time = time[:limit:stride]
+        component = component[:limit:stride]
+
+        # Determine coupling type
+        if "1_1e-7" in file_path:
+            coupling = "strong"
+        elif "1e-8" in file_path:
+            coupling = "weak"
+        else:
+            coupling = "unknown"
+
+        # Track file description for filename
+        filenames.append(f"{comp_idx}_{coupling}")
+
+        plt.plot(time, component, label=f"component {comp_idx} ({coupling} coupling)", 
+                 marker="o", markersize=2)
+
+    plt.title("superimposed components")
+    plt.xlabel("time (years)")
+    plt.ylabel("amplitude")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+    # Generate output filename
+    filename_base = "_".join(filenames)
+    output_filename = f"{filename_base}.png"
+    #plt.savefig(output_filename, dpi=300)
+    #plt.close()
+    #print(f"Plot saved as '{output_filename}'")
+
+
+
+# MAIN
+strong_coupling = "../data_thesis/data_1e5points_1000ws/evol_fields_1_1e-7.dat"
+weak_coupling = "../data_thesis/data_1e5points_1000ws/evol_fields_1e-8.dat"
+
+# Examples:
+#plot_single(weak_coupling, which_component=1, zoom=10, stride=5)
+#plot_single(strong_coupling, which_component=1, zoom=10, stride=5)
+
+
+"""
+# first 10 atmospheric components 
+plot_superimposed([
+    (strong_coupling, 1),
+    #(strong_coupling, 2),
+    #(strong_coupling, 3), 
+    #(strong_coupling, 4),
+    #(strong_coupling, 5),
+    (strong_coupling, 6),
+    #(strong_coupling, 7),
+    #(strong_coupling, 8),
+    (strong_coupling, 9),
+    #(strong_coupling, 10)
+], zoom=10, stride=1)
+
+
+# second 10 atmospheric c 
+plot_superimposed([
+    (strong_coupling, 11),
+    #(strong_coupling, 12),
+    #(strong_coupling, 13), 
+    #(strong_coupling, 14), 
+    #(strong_coupling, 15), 
+    (strong_coupling, 16), 
+    #(strong_coupling, 17),
+    #(strong_coupling, 18), 
+    (strong_coupling, 19), 
+    #(strong_coupling, 20)        
+], zoom=10, stride=1)
+"""
+
+"""
+# first 8 ocean c 
+plot_superimposed([
+    (strong_coupling, 21),
+    (strong_coupling, 22),
+    #(strong_coupling, 23), 
+    #(strong_coupling, 24), 
+    #(strong_coupling, 25), 
+    (strong_coupling, 26), 
+    #(strong_coupling, 27),
+    #(strong_coupling, 28)        
+], zoom=10, stride=1)
+
+
+
+# second 8 ocean c 
+plot_superimposed([
+    (strong_coupling, 29),
+    (strong_coupling, 30),
+    #(strong_coupling, 31),
+    (strong_coupling, 32), 
+    #(strong_coupling, 33),
+    (strong_coupling, 34),
+    #(strong_coupling, 35),
+    #(strong_coupling, 36)
+], zoom = 10, stride=1)
+
+#######################
+# weak coupling section 
+#######################
+
+# first 10 atmospheric components 
+plot_superimposed([
+    (weak_coupling, 1),
+    #(strong_coupling, 2),
+    #(strong_coupling, 3), 
+    #(strong_coupling, 4),
+    #(strong_coupling, 5),
+    (weak_coupling, 6),
+    #(strong_coupling, 7),
+    #(strong_coupling, 8),
+    (weak_coupling, 9),
+    #(strong_coupling, 10)
+], zoom=10, stride=1)
+
+
+# second 10 atmospheric c 
+plot_superimposed([
+    (weak_coupling, 11),
+    #(strong_coupling, 12),
+    #(strong_coupling, 13), 
+    #(strong_coupling, 14), 
+    #(strong_coupling, 15), 
+    (weak_coupling, 16), 
+    #(strong_coupling, 17),
+    #(strong_coupling, 18), 
+    (weak_coupling, 19), 
+    #(strong_coupling, 20)        
+], zoom=1, stride=1)
+
+# first 8 ocean c 
+plot_superimposed([
+    (weak_coupling, 21),
+    (weak_coupling, 22),
+    #(strong_coupling, 23), 
+    #(strong_coupling, 24), 
+    #(strong_coupling, 25), 
+    (weak_coupling, 26), 
+    #(strong_coupling, 27),
+    #(strong_coupling, 28)        
+], zoom=1, stride=1)
+
+# second 8 ocean c 
+plot_superimposed([
+    (weak_coupling, 29),
+    (weak_coupling, 30),
+    #(strong_coupling, 31),
+    (weak_coupling, 32), 
+    #(strong_coupling, 33),
+    (weak_coupling, 34),
+    #(strong_coupling, 35),
+    #(strong_coupling, 36)
+], zoom = 1, stride=1)
+
+"""
+
+# plotting ocean and atmosphere components on the same plot now 
+plot_superimposed([
+    (weak_coupling, 1),
+    (weak_coupling, 6),
+    (weak_coupling, 22),
+    (weak_coupling, 30), 
+    (weak_coupling, 34)
+], zoom = 10, stride=1)
+
+plot_superimposed([
+    (strong_coupling, 1),
+    (strong_coupling, 6),
+    (strong_coupling, 22),
+    (strong_coupling, 30), 
+    (strong_coupling, 34)
+], zoom = 10, stride=1)
+
+
+"""
+# now superimpose strong and weak coupling example components 
+plot_superimposed([
+    (strong_coupling, 1),
+    (weak_coupling, 1)
+], zoom = 1, stride=1)
+
+plot_superimposed([
+    (strong_coupling, 22),
+    (weak_coupling, 22)
+], zoom = 1, stride=1)
+"""

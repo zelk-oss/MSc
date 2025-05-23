@@ -53,20 +53,20 @@ def simulate_and_save(mu):
     plt.plot(t[0:10000],y[0:10000], label = "atmosphere")
     plt.legend()
 
-    #plt.show()
+    plt.show()
 
     plt.scatter(x,xdot, s = 0.2, label = "ocean phase space")
     
     plt.scatter(y,ydot, s = 0.2, label = "atmosphere phase space")
     plt.legend()
 
-    #plt.show()
+    plt.show()
 
     # save time series 
-    with open(f'data_mu{mu}.txt', 'w') as file: 
-        file.write("time ocean atmosphere\n")  # optional: add header
-        for i in range(len(t)):
-            file.write(f"{t[i]} {x[i]} {y[i]}\n")
+    #with open(f'data_mu{mu}.txt', 'w') as file: 
+        #file.write("time ocean atmosphere\n")  # optional: add header
+        #for i in range(len(t)):
+            #file.write(f"{t[i]} {x[i]} {y[i]}\n")
 
 
 
