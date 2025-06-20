@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib
 
 sys.path.insert(0, '/home/chiaraz/Liang_Index_climdyn')
-from function_liang import compute_liang
+from function_liang_nvar import compute_liang_nvar
 
 from jpype import *
 import numpy
@@ -31,7 +31,7 @@ def liang_compute_save(mu):
     # empty arrays for time series from file 
     data_in_file = []
 
-    with open(f"data_mu{mu}.txt", 'r') as file: 
+    with open(f"/home/chiaraz/data_thesis/lin_oscillator/data_mu{mu}.txt", 'r') as file: 
         for index, line in enumerate(file):
             if index == 0: 
                 continue  
@@ -49,14 +49,47 @@ def liang_compute_save(mu):
                 print(f"Could not convert line to floats: {line}")
     
     data_in_file = np.transpose(data_in_file)
-    print(np.shape(data_in_file))
+    print("shape of data in file: ", np.shape(data_in_file))
+    X1 = data_in_file[0]
+    X2 = data_in_file[1]
+    print(np.shape(X1), np.shape(X2))
 
-    print(data_in_file[0], ": first column?")
+    # === Liang index analysis ===
+    dt = 0.01
+    # bootstrap iterations 
+    n_iter = 200
+    conf = 1.96
+    nvar = 2
+    start = int(10 / dt)
 
-    results = compute_liang(data_in_file[0], data_in_file[1], 1, 100)
-    print("T21,tau21,error_T21,error_tau21,R,error_R,error_T21_FI")
-    print(results)
-    print("tau_12: ", results[1], " +/- ", results[3])
+    xx = np.array((X1[start:], X2[start:]))
+    T, tau, R, error_T, error_tau, error_R = compute_liang_nvar(xx, dt, n_iter)
+
+    def compute_sig(var, error, conf):
+        if (var - conf * error < 0. and var + conf * error < 0.) or (var - conf * error > 0. and var + conf * error > 0.):
+            return 1
+        else:
+            return 0
+
+    # Compute significance
+    sig_T = np.zeros((nvar, nvar))
+    sig_tau = np.zeros((nvar, nvar))
+    sig_R = np.zeros((nvar,nvar))
+    for j in range(nvar):
+        for k in range(nvar):
+            sig_T[j, k] = compute_sig(T[j, k], error_T[j, k], conf)
+            sig_tau[j,k] = compute_sig(tau[j,k], error_tau[j,k], conf)
+            sig_R[j,k] = compute_sig(R[j,k],error_R[j,k],conf)
+
+    print("=== Liang Index ===")
+    print("T matrix:\n", T)
+    print("Significance (T):\n", sig_T)
+    print("tau matrix:\n", tau)
+    print("Significance tau:\n", sig_tau)
+    print("R matrix:\n", R)
+    print("Significance R:\n", sig_R)
+
+
 
 
 def te_biv_compute_save(mu): 
@@ -130,7 +163,7 @@ def te_biv_compute_save(mu):
                 ])
 
 
-te_biv_compute_save(100)
+#te_biv_compute_save(100)
 
-#liang_compute_save(0)
+liang_compute_save(10)
 #liang_compute_save(100)
