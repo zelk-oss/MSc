@@ -8,6 +8,8 @@ Last updated: 19/09/2023
 @author: David Docquier
 """
 
+"AGGIORNARE CODICE PER LEGGERE SOLO I DATI DI LIANG E QUELLI TE"
+
 # Import libraries
 import numpy as np
 import matplotlib.pyplot as plt
@@ -22,29 +24,6 @@ nvar = 2 # number of variables
 # Load numerical results LKIF
 T,tau,R,error_T,error_tau,error_R,sig_T,sig_tau,sig_R = np.load('2D_liang.npy',allow_pickle=True)
 
-# Load numerical results PCMCI with original dt = 0.001
-beta = np.load('PCMCI/tig5_LIANG_2D_all_X1X2_tau0-12',allow_pickle=True)
-beta_max = np.nanmax(beta[:,:,0:3],axis=2)
-beta_min = np.nanmin(beta[:,:,0:3],axis=2)
-beta_val = np.zeros((nvar,nvar))
-for j in np.arange(nvar):
-    for i in np.arange(nvar):
-        if beta_max[j,i] >= np.abs(beta_min[j,i]):
-            beta_val[j,i] = beta_max[j,i]
-        else:
-            beta_val[j,i] = beta_min[j,i]
-            
-# Load numerical results PCMCI with dt = 0.1 (every 100 time steps)
-beta2 = np.load('PCMCI/tig5_LIANG_2D_100tmask_X1X2_tau0-2',allow_pickle=True)
-beta_max2 = np.nanmax(beta2[:,:,:],axis=2)
-beta_min2 = np.nanmin(beta2[:,:,:],axis=2)
-beta_val2 = np.zeros((nvar,nvar))
-for j in np.arange(nvar):
-    for i in np.arange(nvar):
-        if beta_max2[j,i] >= np.abs(beta_min2[j,i]):
-            beta_val2[j,i] = beta_max2[j,i]
-        else:
-            beta_val2[j,i] = beta_min2[j,i]
 
 # Load analytical results LKIF
 dir_anal = '/home/dadocq/Documents/Codes/Liang/'

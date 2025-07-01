@@ -27,6 +27,8 @@ if not isJVMStarted():
 # ###################################### 
 
 def liang_compute_save(mu):
+    """ extract data from timeseries file. apply liang to all combinations of the two variables 
+    print the results to terminal """
 
     # empty arrays for time series from file 
     data_in_file = []
@@ -49,9 +51,9 @@ def liang_compute_save(mu):
                 print(f"Could not convert line to floats: {line}")
     
     data_in_file = np.transpose(data_in_file)
-    print("shape of data in file: ", np.shape(data_in_file))
-    X1 = data_in_file[0]
-    X2 = data_in_file[1]
+    #print("shape of data in file: ", np.shape(data_in_file))
+    X1 = data_in_file[0] # ocean 
+    X2 = data_in_file[1] # atmosphere 
     print(np.shape(X1), np.shape(X2))
 
     # === Liang index analysis ===
@@ -80,7 +82,8 @@ def liang_compute_save(mu):
             sig_T[j, k] = compute_sig(T[j, k], error_T[j, k], conf)
             sig_tau[j,k] = compute_sig(tau[j,k], error_tau[j,k], conf)
             sig_R[j,k] = compute_sig(R[j,k],error_R[j,k],conf)
-
+    
+    print(f"Results for mu={mu}")
     print("=== Liang Index ===")
     print("T matrix:\n", T)
     print("Significance (T):\n", sig_T)
@@ -92,78 +95,75 @@ def liang_compute_save(mu):
 
 
 
-def te_biv_compute_save(mu): 
+def te_biv_compute_save(mu, k): 
     import os
     from jpype.types import JArray, JDouble
 
     # 0. Load/prepare the data:
     data = []
 
-    with open(f"data_mu{mu}.txt", 'r') as file: 
+    with open(f"/home/chiaraz/data_thesis/lin_oscillator/data_mu{mu}.txt", 'r') as file: 
         for index, line in enumerate(file):
-            if index == 0:
-                continue  # Skip header
+            if index == 0: 
+                continue  
+            # handling potential invalid data 
             try:
-                row = [float(val) for val in line.strip().split(',')]
-                if len(row) < 3:
-                    continue
-                # Only take the second and third columns
+                # turns lines in the file in tuples of 2 elements
+                row = [float(value) for value in line.split()]
+                if len(row) < 2: 
+                    print("Line has insufficient data: {line.strip()}")
+                    continue 
+                # here we can do stuff with the data 
                 data.append([row[1], row[2]])
+
             except ValueError:
-                continue
+                print(f"Could not convert line to floats: {line}")
 
     # Convert to numpy array and transpose: shape (n_variables x time_steps)
     data = np.transpose(np.array(data))  # shape: 2 x N
+    X1 = data[0] # ocean 
+    X2 = data[1] # atmosphere 
 
-    # 1. Construct the calculator:
+    # === Transfer Entropy analysis (JIDT) ===
+    jarLocation = "/mnt/c/Users/zelco/Documents/JIDT/infodynamics.jar"
+    if not isJVMStarted():
+        startJVM(getDefaultJVMPath(), "-ea", f"-Djava.class.path={jarLocation}", convertStrings=True)
+
+    ocean_java = JArray(JDouble, 1)(X1.tolist())
+    atmo_java = JArray(JDouble, 1)(X2.tolist())
     calcClass = JPackage("infodynamics.measures.continuous.kraskov").TransferEntropyCalculatorKraskov
     calc = calcClass()
+    # CHANGE EMBEDDING DIMENSION HERE
+    calc.setProperty("k", f"{k}")
+    Nsurrogates = 200
 
-    # 2. Set properties (as needed)
-    calc.setProperty("k", "2")
-    calc.setProperty("AUTO_EMBED_RAGWITZ_NUM_NNS", "4")
+    print("starting computation...")
+    # X1 → X2
+    calc.initialise()
+    calc.setObservations(ocean_java, atmo_java)
+    te_oa = calc.computeAverageLocalOfObservations()
+    dist_oa = calc.computeSignificance(Nsurrogates)
 
-    # Create results directory if needed
-    results_dir = "results"
-    os.makedirs(results_dir, exist_ok=True)
+    # X2 → X1
+    calc.initialise()
+    calc.setObservations(atmo_java, ocean_java)
+    te_ao = calc.computeAverageLocalOfObservations()
+    dist_ao = calc.computeSignificance(Nsurrogates)
 
-    # 3. Open a CSV file to store results
-    with open(os.path.join(results_dir, f"results_mu{mu}.csv"), mode="w", newline="") as csvfile:
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerow([
-            "Source", "Destination", "TE_Kraskov", "Null Mean", "Null Std Dev", "P-value", "Surrogates"
-        ])
+    print(f"Results for mu = {mu} ; k = {k}")
+    print("=== Transfer Entropy (TE) ===")
+    print(f"TE (X1 → X2): {te_oa:.6g} nats, Dist mean: {dist_oa.getMeanOfDistribution():.6g}, "
+        f"Dist std: {dist_oa.getStdOfDistribution():.6g}, p-value: {dist_oa.pValue:.6g}, "
+        f"N surrogates: {Nsurrogates}")
 
-        # 4. Loop through pairs of variables
-        for s in range(2):
-            for d in range(2):
-                if s == d:
-                    continue  # skip self-transfer
-
-                source = JArray(JDouble, 1)(data[s, :].tolist())
-                destination = JArray(JDouble, 1)(data[d, :].tolist())
-
-                # 5. Initialize calculator and compute TE
-                calc.initialise()
-                calc.setObservations(source, destination)
-                result = calc.computeAverageLocalOfObservations()
-
-                # 6. Compute statistical significance
-                measDist = calc.computeSignificance(100)
-
-                print(
-                    f"TE_Kraskov (col_{s} -> col_{d}) = {result:.4f} nats "
-                    f"(null: {measDist.getMeanOfDistribution():.4f} ± {measDist.getStdOfDistribution():.4f}; "
-                    f"p = {measDist.pValue:.5f})"
-                )
-
-                csvwriter.writerow([
-                    s, d, result, measDist.getMeanOfDistribution(),
-                    measDist.getStdOfDistribution(), measDist.pValue, 100
-                ])
+    print(f"TE (X2 → X1): {te_ao:.6g} nats, Dist mean: {dist_ao.getMeanOfDistribution():.6g}, "
+        f"Dist std: {dist_ao.getStdOfDistribution():.6g}, p-value: {dist_ao.pValue:.6g}, "
+        f"N surrogates: {Nsurrogates}", "\n")
 
 
-#te_biv_compute_save(100)
+te_biv_compute_save(1, 4)
+te_biv_compute_save(1, 8)
+te_biv_compute_save(10, 4) 
+te_biv_compute_save(10, 8)
 
-liang_compute_save(10)
-#liang_compute_save(100)
+#liang_compute_save()

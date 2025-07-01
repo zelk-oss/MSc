@@ -71,9 +71,10 @@ def simulate_and_save(mu):
         file.write("time ocean atmosphere\n")  # optional: add header
         for i in range(len(t)):
             file.write(f"{t[i]} {x[i]} {y[i]}\n")
+            
 
 
 # Run both original and modified models for various mu values
-for mu_val in [10]:
+for mu_val in [1]:
     #simulate_and_save(mu_val, modified_coupling=False)
     simulate_and_save(mu_val)
