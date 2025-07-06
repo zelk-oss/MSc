@@ -5,6 +5,7 @@ Analyze saved time series using Transfer Entropy.
 import numpy as np
 import sys
 from jpype import *
+import os 
 
 # === Load time series ===
 input_file = "/home/chiaraz/data_thesis/2D_system_data/2D_timeseries.txt"
@@ -23,10 +24,12 @@ atmo_java = JArray(JDouble, 1)(X2.tolist())
 calcClass = JPackage("infodynamics.measures.continuous.kraskov").TransferEntropyCalculatorKraskov
 calc = calcClass()
 # CHANGE EMBEDDING DIMENSION HERE
-calc.setProperty("k", "4")
+k =30
+calc.setProperty("k", f"{k}")
 Nsurrogates = 200
 
 print("starting computation...")
+
 # X1 → X2
 calc.initialise()
 calc.setObservations(ocean_java, atmo_java)
@@ -39,7 +42,7 @@ calc.setObservations(atmo_java, ocean_java)
 te_ao = calc.computeAverageLocalOfObservations()
 dist_ao = calc.computeSignificance(Nsurrogates)
 
-print("\n=== Transfer Entropy (TE) ===")
+print("\n=== Transfer Entropy (TE) ===\n")
 print(f"TE (X1 → X2): {te_oa:.6g} nats, Dist mean: {dist_oa.getMeanOfDistribution():.6g}, "
       f"Dist std: {dist_oa.getStdOfDistribution():.6g}, p-value: {dist_oa.pValue:.6g}, "
       f"N surrogates: {Nsurrogates}")
@@ -47,3 +50,18 @@ print(f"TE (X1 → X2): {te_oa:.6g} nats, Dist mean: {dist_oa.getMeanOfDistribut
 print(f"TE (X2 → X1): {te_ao:.6g} nats, Dist mean: {dist_ao.getMeanOfDistribution():.6g}, "
       f"Dist std: {dist_ao.getStdOfDistribution():.6g}, p-value: {dist_ao.pValue:.6g}, "
       f"N surrogates: {Nsurrogates}")
+
+# Save to custom directory
+output_dir = os.path.expanduser("~/data_thesis/2D_system_data")
+os.makedirs(output_dir, exist_ok=True)
+filename = f"te_2D_embedding{k}.txt"
+with open(os.path.join(output_dir, filename), 'w') as file: 
+      file.write("=== Transfer Entropy (TE) ===")
+      file.write(f"TE (X1 → X2): {te_oa:.6g} nats, Dist mean: {dist_oa.getMeanOfDistribution():.6g}, \n"
+            f"Dist std: {dist_oa.getStdOfDistribution():.6g}, p-value: {dist_oa.pValue:.6g}, \n"
+            f"N surrogates: {Nsurrogates} \n")
+
+      file.write(f"TE (X2 → X1): {te_ao:.6g} nats, Dist mean: {dist_ao.getMeanOfDistribution():.6g}, \n"
+            f"Dist std: {dist_ao.getStdOfDistribution():.6g}, p-value: {dist_ao.pValue:.6g}, \n"
+            f"N surrogates: {Nsurrogates} \n")
+print("saved file")

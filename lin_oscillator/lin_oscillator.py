@@ -3,16 +3,16 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import os
 
+time_series_ocean = {}
+time_series_atmosphere = {}
+
 def simulate_and_save(mu):
     def odes(z, t): 
         # constants 
         m_o = 1  # ocean mass 
-        m_a = 0.01     # atmosphere mass
+        m_a = 0.004     # atmosphere mass
         k_o = 1   # ocean spring constant
-        k_a = 1    # atmosphere spring constant
-
-        # parameters for modified model
-        mu0 = 1  # transition sharpness for alpha(mu)
+        k_a = 0.4    # atmosphere spring constant
 
         # unpack state vector
         x1 = z[0]
@@ -42,6 +42,9 @@ def simulate_and_save(mu):
     y = z[:, 2]   # atmosphere position
     ydot = z[:, 3]
 
+    time_series_ocean[mu] = (t, x)
+    time_series_atmosphere[mu] = (t, y)
+
     # Plot time series
     plt.figure(figsize=(10, 4))
     plt.plot(t, x, label="ocean")
@@ -50,7 +53,8 @@ def simulate_and_save(mu):
     plt.xlabel("Time")
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    plt.grid()
+    #plt.show()
 
     # Phase space
     """
@@ -63,7 +67,6 @@ def simulate_and_save(mu):
     #plt.show()
     """
 
-    
     # save time series 
     output_dir = os.path.expanduser("~/data_thesis/lin_oscillator")
     os.makedirs(output_dir, exist_ok=True)
@@ -71,10 +74,31 @@ def simulate_and_save(mu):
         file.write("time ocean atmosphere\n")  # optional: add header
         for i in range(len(t)):
             file.write(f"{t[i]} {x[i]} {y[i]}\n")
-            
 
 
-# Run both original and modified models for various mu values
-for mu_val in [1]:
-    #simulate_and_save(mu_val, modified_coupling=False)
+# Run model for various mu values
+for mu_val in [0]:
     simulate_and_save(mu_val)
+
+plt.figure(figsize=(10, 4))
+for mu, (t, x) in time_series_ocean.items():
+    plt.plot(t, x, label=f"μ = {mu}")
+plt.title("Ocean Time Series for Different μ")
+plt.xlabel("Time")
+plt.ylabel("Ocean Position")
+plt.legend()
+plt.grid()
+plt.tight_layout()
+#plt.show()
+
+# === Added: plot all atmosphere time series ===
+plt.figure(figsize=(10, 4))
+for mu, (t, y) in time_series_atmosphere.items():
+    plt.plot(t, y, label=f"μ = {mu}")
+plt.title("Atmosphere Time Series for Different μ")
+plt.xlabel("Time")
+plt.ylabel("Atmosphere Position")
+plt.legend()
+plt.grid()
+plt.tight_layout()
+#plt.show()

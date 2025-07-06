@@ -2,15 +2,15 @@
 
 import sys
 import numpy as np
-import matplotlib
+import os 
+
+import time 
 
 sys.path.insert(0, '/home/chiaraz/Liang_Index_climdyn')
 from function_liang_nvar import compute_liang_nvar
 
 from jpype import *
-import numpy
 import sys
-import csv  # For writing results to a CSV file
 
 # Our python data file readers are a bit of a hack, python users will do better on this:
 sys.path.append("/mnt/c/Users/zelco/Documents/JIDT/demos/python")
@@ -92,6 +92,25 @@ def liang_compute_save(mu):
     print("R matrix:\n", R)
     print("Significance R:\n", sig_R)
 
+    # save data to file 
+    output_dir = os.path.expanduser("~/data_thesis/lin_oscillator")
+    os.makedirs(output_dir, exist_ok=True)
+    filename = f"liang_mu{mu}.txt"
+    def write_matrix(file, name, matrix):
+        file.write(f"{name}:\n")
+        file.write(np.array2string(matrix, precision=8, suppress_small=True))
+        file.write("\n\n")
+
+    with open(os.path.join(output_dir, filename), 'w') as file:
+        file.write(f"=== Liang Index, mu={mu} ===\n\n")
+        write_matrix(file, "T matrix", T)
+        write_matrix(file, "Significance (T)", sig_T)
+        write_matrix(file, "tau matrix", tau)
+        write_matrix(file, "Significance tau", sig_tau)
+        write_matrix(file, "R matrix", R)
+        write_matrix(file, "Significance R", sig_R)
+    print("saved file")
+
 
 
 
@@ -160,10 +179,37 @@ def te_biv_compute_save(mu, k):
         f"Dist std: {dist_ao.getStdOfDistribution():.6g}, p-value: {dist_ao.pValue:.6g}, "
         f"N surrogates: {Nsurrogates}", "\n")
 
+    # Save to custom directory
+    output_dir = os.path.expanduser("~/data_thesis/lin_oscillator")
+    os.makedirs(output_dir, exist_ok=True)
+    filename = f"te_mu{mu}_embedding{k}.txt"
+    with open(os.path.join(output_dir, filename), 'w') as file: 
+        file.write(f"=== Transfer Entropy (TE), mu={mu}, k={k} ===")
+        file.write(f"TE (X1 → X2): {te_oa:.6g} nats, Dist mean: {dist_oa.getMeanOfDistribution():.6g}, \n"
+                f"Dist std: {dist_oa.getStdOfDistribution():.6g}, p-value: {dist_oa.pValue:.6g}, \n"
+                f"N surrogates: {Nsurrogates} \n")
 
-te_biv_compute_save(1, 4)
-te_biv_compute_save(1, 8)
-te_biv_compute_save(10, 4) 
-te_biv_compute_save(10, 8)
+        file.write(f"TE (X2 → X1): {te_ao:.6g} nats, Dist mean: {dist_ao.getMeanOfDistribution():.6g}, \n"
+                f"Dist std: {dist_ao.getStdOfDistribution():.6g}, p-value: {dist_ao.pValue:.6g}, \n"
+                f"N surrogates: {Nsurrogates} \n")
+    print("saved file")
 
-#liang_compute_save()
+# List of parameters to run
+param_sets = [
+    # mu, k
+    (0, 1),
+    (0, 4),
+    (0, 8),
+    (0, 12)
+]
+
+# Time and call each function
+for p1, p2 in param_sets:
+    start_time = time.time()
+    te_biv_compute_save(p1, p2)
+    end_time = time.time()
+    elapsed = end_time - start_time
+    print(f"te_biv_compute_save({p1}, {p2}) took {elapsed:.6f} seconds")
+
+liang_compute_save(0)
+#liang_compute_save(1)

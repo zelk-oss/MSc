@@ -50,6 +50,7 @@ output_file = "/home/chiaraz/data_thesis/2D_system_data/2D_timeseries.txt"
 np.savetxt(output_file, np.column_stack((t, X1, X2)), header="time X1 X2")
 print(f"Time series saved to {output_file}")
 
+
 # Plot the results
 plt.figure(figsize=(10, 4))
 plt.plot(t, X1, label='X1', alpha=0.8)
@@ -60,4 +61,4 @@ plt.ylabel("Value")
 plt.legend()
 plt.tight_layout()
 plt.grid(True)
-plt.show()
+#plt.show()

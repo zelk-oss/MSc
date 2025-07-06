@@ -5,9 +5,10 @@ Analyze saved time series using Liang index.
 import numpy as np
 import sys
 from jpype import *
+import os 
 
 # === Load time series ===
-input_file = "/home/chiaraz/data_thesis/2D_system_data/2D_timeseries.txt"
+input_file = "/home/chiaraz/data_thesis/2D_system_data/2D_timeseries_long.txt"
 data = np.loadtxt(input_file, skiprows=1)
 t = data[:, 0]
 X1 = data[:, 1]
@@ -17,7 +18,7 @@ X2 = data[:, 2]
 sys.path.append('/home/chiaraz/Liang_Index_climdyn/')
 from function_liang_nvar import compute_liang_nvar
 
-dt = 0.001
+dt = 0.01
 # bootstrap iterations 
 n_iter = 200
 conf = 1.96
@@ -51,3 +52,20 @@ print("Significance tau:\n", sig_tau)
 print("R matrix:\n", R)
 print("Significance R:\n", sig_R)
 
+output_dir = os.path.expanduser("~/data_thesis/2D_system_data")
+os.makedirs(output_dir, exist_ok=True)
+filename = f"liang_2D_long.txt"
+def write_matrix(file, name, matrix):
+    file.write(f"{name}:\n")
+    file.write(np.array2string(matrix, precision=8, suppress_small=True))
+    file.write("\n\n")
+
+with open(os.path.join(output_dir, filename), 'w') as file:
+    file.write("=== Liang Index ===\n\n")
+    write_matrix(file, "T matrix", T)
+    write_matrix(file, "Significance (T)", sig_T)
+    write_matrix(file, "tau matrix", tau)
+    write_matrix(file, "Significance tau", sig_tau)
+    write_matrix(file, "R matrix", R)
+    write_matrix(file, "Significance R", sig_R)
+print("saved file")
