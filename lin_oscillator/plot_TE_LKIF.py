@@ -180,26 +180,18 @@ def plot_te_matrix(te_file, label_names, save_fig=False):
 
 
 # === ESEMPIO USO ===
-liang_file001 = '/home/chiaraz/data_thesis/lin_oscillator/liang_mu0.001.txt'
-liang_file1 = '/home/chiaraz/data_thesis/lin_oscillator/liang_mu1.txt'
-te_mu1_k1 = '/home/chiaraz/data_thesis/lin_oscillator/te_mu1_embedding1.txt'
-te_mu1_k4 = '/home/chiaraz/data_thesis/lin_oscillator/te_mu1_embedding4.txt'
-te_mu1_k8 = '/home/chiaraz/data_thesis/lin_oscillator/te_mu1_embedding8.txt'
-te_mu1_k12 = '/home/chiaraz/data_thesis/lin_oscillator/te_mu1_embedding12.txt'
-te_mu001_k1 = '/home/chiaraz/data_thesis/lin_oscillator/te_mu0.001_embedding1.txt'
-te_mu001_k4 = '/home/chiaraz/data_thesis/lin_oscillator/te_mu0.001_embedding4.txt'
-te_mu001_k8 = '/home/chiaraz/data_thesis/lin_oscillator/te_mu0.001_embedding8.txt'
-te_mu001_k12 = '/home/chiaraz/data_thesis/lin_oscillator/te_mu0.001_embedding12.txt'
+liang_file0 = '/home/chiaraz/data_thesis/lin_oscillator/liang_mu0.txt'
+te_mu0_k1 = '/home/chiaraz/data_thesis/lin_oscillator/te_mu0_embedding1.txt'
+te_mu0_k4 = '/home/chiaraz/data_thesis/lin_oscillator/te_mu0_embedding4.txt'
+te_mu0_k8 = '/home/chiaraz/data_thesis/lin_oscillator/te_mu0_embedding8.txt'
+te_mu0_k12 = '/home/chiaraz/data_thesis/lin_oscillator/te_mu0_embedding12.txt'
 label_names = ['ocean', 'atmosphere']
 """
 plot_liang_matrices(liang_file001, label_names, True)
 plot_liang_matrices(liang_file1, label_names,True)
 """
-plot_te_matrix(te_mu1_k1, label_names, True)
-plot_te_matrix(te_mu1_k4, label_names, True)
-plot_te_matrix(te_mu1_k8, label_names, True)
-plot_te_matrix(te_mu1_k12, label_names, True)
-plot_te_matrix(te_mu001_k1, label_names, True)
-plot_te_matrix(te_mu001_k4, label_names, True)
-plot_te_matrix(te_mu001_k8, label_names, True)
-plot_te_matrix(te_mu001_k12, label_names, True)
+plot_te_matrix(te_mu0_k1, label_names, True)
+plot_te_matrix(te_mu0_k4, label_names, True)
+plot_te_matrix(te_mu0_k8, label_names, True)
+plot_te_matrix(te_mu0_k12, label_names, True)
+plot_liang_matrices(liang_file0, label_names, True)
