@@ -32,13 +32,13 @@ sigma2 = 0.1
 # Noise
 np.random.seed(42)  # for reproducibility
 dW1 = np.sqrt(dt) * np.random.normal(0, 1, nt)
-dW2 = np.sqrt(dt) * np.random.normal(0, 1, nt)
+dW2 = np.sqrt(dt) * np.random.normal(1, 1, nt)
 
 # Initialization
 X1 = np.zeros(nt)
 X2 = np.zeros(nt)
 X1[0] = 1
-X2[0] = 2
+X2[0] = -1
 
 # Euler-Maruyama integration
 for i in range(nt - 1):
@@ -46,7 +46,7 @@ for i in range(nt - 1):
     X2[i + 1] = X2[i] + (a22 * X2[i] + a21 * X1[i]) * dt + sigma2 * dW2[i]
 
 # Save time series to text file (columns: time, X1, X2)
-output_file = "/home/chiaraz/data_thesis/2D_system_data/2D_timeseries.txt"
+output_file = "/home/chiaraz/thesis/lin_oscillator/2D_system_data/2D_timeseries_bias1.txt"
 np.savetxt(output_file, np.column_stack((t, X1, X2)), header="time X1 X2")
 print(f"Time series saved to {output_file}")
 
@@ -61,4 +61,4 @@ plt.ylabel("Value")
 plt.legend()
 plt.tight_layout()
 plt.grid(True)
-#plt.show()
+plt.show()

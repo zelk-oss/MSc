@@ -85,7 +85,7 @@ def plot_liang_matrices(liang_file, label_names, save_fig=False):
     R_plot = sns.heatmap(R_masked, annot=R_annotations, fmt='', cmap=cmap_R, ax=ax[0],
                          xticklabels=label_names, yticklabels=label_names, vmin=-1, vmax=1,
                          square=True, cbar_kws={'orientation': 'horizontal', 'label': 'R'}, linewidths=0.5, linecolor='gray', annot_kws={'fontsize': 14})
-    R_plot.set_title('Correlation matrix $R$, $\Delta t = 0.001$')
+    R_plot.set_title('Correlation matrix $R$, $\Delta t = 0.01$')
     R_plot.xaxis.set_ticks_position('top')
     R_plot.set_xticklabels(R_plot.get_xmajorticklabels(), fontsize=14)
     R_plot.set_yticklabels(R_plot.get_ymajorticklabels(), fontsize=14)
@@ -103,7 +103,7 @@ def plot_liang_matrices(liang_file, label_names, save_fig=False):
     tau_plot = sns.heatmap(tau_masked, annot=tau_annotations, fmt='', cmap=cmap_tau, ax=ax[1],
                            xticklabels=label_names, yticklabels=label_names, vmin=0, vmax=60,
                            square=True, cbar_kws={'orientation': 'horizontal', 'label': r'$|\tau|$ (%)'}, linewidths=0.5, linecolor='gray', annot_kws={'fontsize': 14})
-    tau_plot.set_title('Causality strength $|\\tau|$, $\\Delta t=0.001$')
+    tau_plot.set_title('Causality strength $|\\tau|$, $\\Delta t=0.01$')
     tau_plot.xaxis.set_ticks_position('top')
     tau_plot.set_xticklabels(tau_plot.get_xmajorticklabels(), fontsize=14)
     tau_plot.set_yticklabels(tau_plot.get_ymajorticklabels(), fontsize=14)
@@ -114,9 +114,9 @@ def plot_liang_matrices(liang_file, label_names, save_fig=False):
                 tau_plot.add_patch(Rectangle((i, j), 1, 1, fill=False, edgecolor='blue', linewidth=2))
 
     if save_fig:
-        plt.savefig('liang_causality_R_tau_long.png', dpi=300, bbox_inches='tight')
+        plt.savefig('liang_causality_R_tau_bias1.png', dpi=300, bbox_inches='tight')
     
-    #plt.show()
+    plt.show()
 
 
 def plot_te_matrix(te_file, label_names, save_fig=False):
@@ -154,7 +154,7 @@ def plot_te_matrix(te_file, label_names, save_fig=False):
                 vmin=0, vmax=max(te_matrix.max(), 1e-3))
     
 
-    ax_te.set_title(f'Transfer Entropy (TE), k={k}', fontsize=16)
+    ax_te.set_title(f'Transfer Entropy (TE), k={k}, bias=1', fontsize=16)
     ax_te.xaxis.set_ticks_position('top')
     ax_te.set_xticklabels(ax_te.get_xmajorticklabels(), fontsize=14)
     ax_te.set_yticklabels(ax_te.get_ymajorticklabels(), fontsize=14)
@@ -165,25 +165,19 @@ def plot_te_matrix(te_file, label_names, save_fig=False):
                 ax_te.add_patch(Rectangle((i, j), 1, 1, fill=False, edgecolor='darkgreen', linewidth=2))
 
     if save_fig:
-        plt.savefig(f'transfer_entropy_matrix_k{k}.png', dpi=300, bbox_inches='tight')
+        plt.savefig(f'transfer_entropy_matrix_k{k}_bias1.png', dpi=300, bbox_inches='tight')
     
-    #plt.show()
+    plt.show()
 
 
 # === ESEMPIO USO ===
-liang_file = '/home/chiaraz/data_thesis/2D_system_data/liang_2D.txt'
-liang_file_long = '/home/chiaraz/data_thesis/2D_system_data/liang_2D_long.txt'
-te_1 = '/home/chiaraz/data_thesis/2D_system_data/te_2D_embedding1.txt'
-te_4 = '/home/chiaraz/data_thesis/2D_system_data/te_2D_embedding4.txt'
-te_8 = '/home/chiaraz/data_thesis/2D_system_data/te_2D_embedding8.txt'
-te_12 = '/home/chiaraz/data_thesis/2D_system_data/te_2D_embedding12.txt'
-te_14 = '/home/chiaraz/data_thesis/2D_system_data/te_2D_embedding14.txt'
-te_20 = '/home/chiaraz/data_thesis/2D_system_data/te_2D_embedding20.txt'
+liang_file = '/home/chiaraz/thesis/lin_oscillator/2D_system_data/liang_2D_bias1.txt'
+te_file = '/home/chiaraz/thesis/lin_oscillator/2D_system_data/te_2D_embedding1_bias1.txt'
 label_names = ['$x_1$', '$x_2$']
 
 #plot_liang_matrices(liang_file, label_names, True)
-plot_liang_matrices(liang_file_long, label_names, True)
-#plot_te_matrix(te_1, label_names, True)
+plot_liang_matrices(liang_file, label_names, False)
+plot_te_matrix(te_file, label_names, False)
 """
 plot_te_matrix(te_4, label_names, True)
 plot_te_matrix(te_8, label_names, True)

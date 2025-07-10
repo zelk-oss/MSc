@@ -8,7 +8,7 @@ from jpype import *
 import os 
 
 # === Load time series ===
-input_file = "/home/chiaraz/data_thesis/2D_system_data/2D_timeseries_long.txt"
+input_file = "/home/chiaraz/thesis/lin_oscillator/2D_system_data/2D_timeseries.txt"
 data = np.loadtxt(input_file, skiprows=1)
 t = data[:, 0]
 X1 = data[:, 1]
@@ -52,9 +52,9 @@ print("Significance tau:\n", sig_tau)
 print("R matrix:\n", R)
 print("Significance R:\n", sig_R)
 
-output_dir = os.path.expanduser("~/data_thesis/2D_system_data")
+output_dir = os.path.expanduser("~/thesis/lin_oscillator/2D_system_data")
 os.makedirs(output_dir, exist_ok=True)
-filename = f"liang_2D_long.txt"
+filename = f"liang_2D_bias1.txt"
 def write_matrix(file, name, matrix):
     file.write(f"{name}:\n")
     file.write(np.array2string(matrix, precision=8, suppress_small=True))

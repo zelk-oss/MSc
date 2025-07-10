@@ -8,7 +8,7 @@ from jpype import *
 import os 
 
 # === Load time series ===
-input_file = "/home/chiaraz/data_thesis/2D_system_data/2D_timeseries.txt"
+input_file = "/home/chiaraz/thesis/lin_oscillator/2D_system_data/2D_timeseries.txt"
 data = np.loadtxt(input_file, skiprows=1)
 t = data[:, 0]
 X1 = data[:, 1]
@@ -24,7 +24,7 @@ atmo_java = JArray(JDouble, 1)(X2.tolist())
 calcClass = JPackage("infodynamics.measures.continuous.kraskov").TransferEntropyCalculatorKraskov
 calc = calcClass()
 # CHANGE EMBEDDING DIMENSION HERE
-k =30
+k = 20
 calc.setProperty("k", f"{k}")
 Nsurrogates = 200
 
@@ -52,9 +52,9 @@ print(f"TE (X2 → X1): {te_ao:.6g} nats, Dist mean: {dist_ao.getMeanOfDistribut
       f"N surrogates: {Nsurrogates}")
 
 # Save to custom directory
-output_dir = os.path.expanduser("~/data_thesis/2D_system_data")
+output_dir = os.path.expanduser("~/thesis/lin_oscillator/2D_system_data")
 os.makedirs(output_dir, exist_ok=True)
-filename = f"te_2D_embedding{k}.txt"
+filename = f"te_2D_embedding{k}_bias1.txt"
 with open(os.path.join(output_dir, filename), 'w') as file: 
       file.write("=== Transfer Entropy (TE) ===")
       file.write(f"TE (X1 → X2): {te_oa:.6g} nats, Dist mean: {dist_oa.getMeanOfDistribution():.6g}, \n"

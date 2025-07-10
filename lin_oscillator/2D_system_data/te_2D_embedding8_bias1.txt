@@ -1,0 +1,6 @@
+=== Transfer Entropy (TE) ===TE (X1 → X2): 7.66849e-05 nats, Dist mean: -0.000659323, 
+Dist std: 0.00203112, p-value: 0.33, 
+N surrogates: 200 
+TE (X2 → X1): 0.00267199 nats, Dist mean: -0.000484194, 
+Dist std: 0.00198144, p-value: 0.045, 
+N surrogates: 200 
