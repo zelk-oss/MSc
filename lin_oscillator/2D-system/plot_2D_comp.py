@@ -116,7 +116,7 @@ def plot_liang_matrices(liang_file, label_names, save_fig=False):
     if save_fig:
         plt.savefig('liang_causality_R_tau_bias1.png', dpi=300, bbox_inches='tight')
     
-    plt.show()
+    #plt.show()
 
 
 def plot_te_matrix(te_file, label_names, save_fig=False):
@@ -167,17 +167,21 @@ def plot_te_matrix(te_file, label_names, save_fig=False):
     if save_fig:
         plt.savefig(f'transfer_entropy_matrix_k{k}_bias1.png', dpi=300, bbox_inches='tight')
     
-    plt.show()
+    #plt.show()
 
 
 # === ESEMPIO USO ===
 liang_file = '/home/chiaraz/thesis/lin_oscillator/2D_system_data/liang_2D_bias1.txt'
-te_file = '/home/chiaraz/thesis/lin_oscillator/2D_system_data/te_2D_embedding1_bias1.txt'
+te_file = '/home/chiaraz/thesis/lin_oscillator/2D_system_data/te_2D_embedding8_bias1.txt'
 label_names = ['$x_1$', '$x_2$']
 
 #plot_liang_matrices(liang_file, label_names, True)
-plot_liang_matrices(liang_file, label_names, False)
-plot_te_matrix(te_file, label_names, False)
+plot_liang_matrices(liang_file, label_names, True)
+plot_te_matrix(te_file, label_names, True)
+plot_te_matrix('/home/chiaraz/thesis/lin_oscillator/2D_system_data/te_2D_embedding12_bias1.txt', label_names, True)
+plot_te_matrix('/home/chiaraz/thesis/lin_oscillator/2D_system_data/te_2D_embedding20_bias1.txt', label_names, True)
+plot_te_matrix('/home/chiaraz/thesis/lin_oscillator/2D_system_data/te_2D_embedding1_bias1.txt', label_names, True)
+plot_te_matrix('/home/chiaraz/thesis/lin_oscillator/2D_system_data/te_2D_embedding4_bias1.txt', label_names, True)
 """
 plot_te_matrix(te_4, label_names, True)
 plot_te_matrix(te_8, label_names, True)
