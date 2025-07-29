@@ -10,7 +10,7 @@ import os
 
 # Path to the JIDT library and data
 jar_path = "/mnt/c/Users/zelco/Documents/JIDT/infodynamics.jar"
-data_file = "/home/chiaraz/thesis/lin_oscillator/data_lin_oscillator/data_mu0.001.txt"
+data_file = "/home/chiaraz/thesis/lin_oscillator/data_lin_oscillator/data_mu0.txt"
 
 # Append your JIDT python readers
 sys.path.append("/mnt/c/Users/zelco/Documents/JIDT/demos/python")
@@ -52,5 +52,5 @@ def compute_te_alg(alg_num, out_filename):
             f_out.write(f"{k_val}\t{te_1to2:.6f}\t{std_1to2:.6f}\t{pval_1to2:.6f}\t{te_2to1:.6f}\t{std_2to1:.6f}\t{pval_2to1:.6f}\n")
 
 if __name__ == "__main__":
-    compute_te_alg(1, "te_mu001_results_alg1.txt")
-    compute_te_alg(2, "te_mu001_results_alg2.txt")
+    compute_te_alg(1, "te_mu0_results_alg1.txt")
+    compute_te_alg(2, "te_mu0_results_alg2.txt")
