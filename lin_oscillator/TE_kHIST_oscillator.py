@@ -49,7 +49,7 @@ def compute_te_alg(alg_num, out_filename):
             te_2to1, std_2to1, pval_2to1 = compute_te(col2, col1)
 
             print(f"ALG {alg_num} | k={k_val} | TE 1→2: {te_1to2:.4f} ± {std_1to2:.4f}, TE 2→1: {te_2to1:.4f} ± {std_2to1:.4f}")
-            f_out.write(f"{k_val}\t{te_1to2:.6f}\t{std_1to2:.6f}\t{pval_1to2:.6f}\t{te_2to1:.6f}\t{std_2to1:.6f}\t{pval_2to1:.6f}\n")
+            f_out.write(f"{k_val}\t{te_1to2:.6g}\t{std_1to2:.6g}\t{pval_1to2:.6g}\t{te_2to1:.6g}\t{std_2to1:.6g}\t{pval_2to1:.6g}\n")
 
 if __name__ == "__main__":
     compute_te_alg(1, "te_mu0_results_alg1.txt")

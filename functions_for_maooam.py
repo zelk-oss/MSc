@@ -250,7 +250,7 @@ def is_extreme_value(values, threshold=0.999):
 
 import numpy as np
 
-def apply_masking(data, threshold_for_extremes, source_column="Source", target_column="Target", 
+def apply_masking(data, threshold_for_extremes=1, source_column="Source", target_column="Target", 
                   tau_column="Tau", tau_error_column="Error_Tau",
                   r_column="R", r_error_column="Error_R", use_masking=True):
     """
